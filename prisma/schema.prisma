@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model announcementimages {
+  imageId        Int           @id @default(autoincrement())
+  imageUrl       String        @db.VarChar(500)
+  announcementId Int
+  announcement   announcements @relation(fields: [announcementId], references: [announcementId], onDelete: Cascade, map: "announcementImages_announcementId_fkey")
+}
+
+model announcements {
+  announcementId Int                  @id @default(autoincrement())
+  title          String               @db.VarChar(200)
+  content        String               @db.Text
+  coverImage     String               @db.VarChar(500)
+  isPublished    Boolean              @default(true)
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+  images         announcementimages[]
+}
+model assignment_submissions {
+  submissionId Int         @id @default(autoincrement())
+  assignmentId Int
+  studentId    Int
+  fileName     String      @db.VarChar(255)
+  fileType     String      @db.VarChar(100)
+  filePath     String      @db.VarChar(500)
+  submittedAt  DateTime    @default(now())
+  status       String      @default("SUBMITTED") @db.VarChar(20)
+  assignment   assignments @relation(fields: [assignmentId], references: [assignmentId], onDelete: Cascade)
+  student      students    @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+
+  @@index([assignmentId], map: "assignment_submissions_assignmentId_fkey")
+  @@index([studentId], map: "assignment_submissions_studentId_fkey")
+}
+
+model assignments {
+  assignmentId   Int                      @id @default(autoincrement())
+  classSubjectId Int
+  title          String                   @db.VarChar(200)
+  description    String                   @db.Text
+  createdAt      DateTime                 @default(now())
+  deadline       DateTime
+  status         String                   @default("ACTIVE") @db.VarChar(20)
+  classSubject   classsubjects            @relation(fields: [classSubjectId], references: [classSubjectId], onDelete: Cascade)
+  submissions    assignment_submissions[]
+
+  @@index([classSubjectId], map: "assignments_classSubjectId_fkey")
+}
+
+model classsubjects {
+  classSubjectId   Int                @id @default(autoincrement())
+  classId          Int
+  subjectId        Int
+  teacherId        Int
+  class            physicalclasses    @relation(fields: [classId], references: [classId], onDelete: Cascade)
+  subject          subjects           @relation(fields: [subjectId], references: [subjectId], onDelete: Cascade)
+  teacher          teachers           @relation(fields: [teacherId], references: [userId], onDelete: Cascade)
+  assignments      assignments[]
+  educationalFiles educationalfiles[]
+  grades           grades[]
+
+  @@unique([classId, subjectId])
+  @@index([subjectId])
+  @@index([teacherId])
+}
+
+model educationalfiles {
+  fileId         Int           @id @default(autoincrement())
+  classSubjectId Int
+  title          String        @db.VarChar(200)
+  fileName       String        @db.VarChar(255)
+  fileType       String        @db.VarChar(50)
+  filePath       String        @db.VarChar(500)
+  description    String        @db.Text
+  uploadDate     DateTime      @default(now())
+  classSubject   classsubjects @relation(fields: [classSubjectId], references: [classSubjectId], onDelete: Cascade)
+
+  @@index([classSubjectId], map: "educationalfiles_classSubjectId_fkey")
+}
+
+model grades {
+  gradeId        Int           @id @default(autoincrement())
+  studentId      Int
+  classSubjectId Int
+  score          Float
+  examType       String        @db.VarChar(50)
+  examDate       DateTime      @default(now())
+  student        students      @relation(fields: [studentId], references: [userId], onDelete: Cascade)
+  classSubject   classsubjects @relation(fields: [classSubjectId], references: [classSubjectId], onDelete: Cascade)
+
+  @@index([classSubjectId], map: "grades_classSubjectId_fkey")
+  @@index([studentId], map: "grades_studentId_fkey")
+}
+
+model physicalclasses {
+  classId       Int             @id @default(autoincrement())
+  className     String          @db.VarChar(100)
+  gradeLevel    String          @db.VarChar(30)
+  capacity      Int
+  academicYear  String          @db.VarChar(20)
+  students      students[]
+  classSubjects classsubjects[]
+}
+
+model preregistrations {
+  preRegistrationId Int      @id @default(autoincrement())
+  studentFirstName  String   @db.VarChar(50)
+  studentLastName   String   @db.VarChar(50)
+  fatherName        String   @db.VarChar(50)
+  phoneNumber       String   @db.VarChar(20)
+  requestedGrade    String   @db.VarChar(30)
+  description       String   @db.Text
+  status            String   @default("PENDING") @db.VarChar(20)
+  createdAt         DateTime @default(now())
+}
+
+model principals {
+  userId Int   @id
+  user   users @relation(fields: [userId], references: [userId], onDelete: Cascade)
+}
+
+model students {
+  userId                Int                      @id
+  studentCode           String                   @unique @db.VarChar(20)
+  birthDate             DateTime?
+  classId               Int?
+  user                  users                    @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  class                 physicalclasses?         @relation(fields: [classId], references: [classId], onDelete: Cascade)
+  assignmentSubmissions assignment_submissions[]
+  grades                grades[]
+
+  @@index([classId], map: "students_classId_fkey")
+}
+
+model subjects {
+  subjectId     Int             @id @default(autoincrement())
+  subjectName   String          @db.VarChar(100)
+  gradeLevel    String          @db.VarChar(30)
+  description   String          @db.Text
+  classsubjects classsubjects[]
+}
+
+model teachers {
+  userId         Int             @id
+  specialization String          @db.VarChar(100)
+  user           users           @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  classsubjects  classsubjects[]
+}
+
+model users {
+  userId       Int         @id @default(autoincrement())
+  firstName    String      @db.VarChar(50)
+  lastName     String      @db.VarChar(50)
+  nationalCode String      @unique @db.VarChar(10)
+  phoneNumber  String      @db.VarChar(20)
+  username     String      @unique @db.VarChar(50)
+  password     String      @db.VarChar(255)
+  isActive     Boolean     @default(true)
+  student      students?
+  teacher      teachers?
+  principal    principals?
+}
