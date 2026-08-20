@@ -34,7 +34,6 @@ export default async function AnnouncementDetailPage({
 
 
 
-
   if (!announcement) {
 
     return (
@@ -51,9 +50,7 @@ export default async function AnnouncementDetailPage({
       >
 
         <h1 className="text-2xl font-bold">
-
           اطلاعیه پیدا نشد
-
         </h1>
 
       </main>
@@ -61,7 +58,6 @@ export default async function AnnouncementDetailPage({
     );
 
   }
-
 
 
 
@@ -89,12 +85,10 @@ export default async function AnnouncementDetailPage({
         announcement.coverImage && (
 
           <div
-
             className="
               max-w-4xl
               mx-auto
             "
-
           >
 
             <Image
@@ -152,22 +146,14 @@ export default async function AnnouncementDetailPage({
 
         >
 
-          {
-            announcement.title
-          }
+          {announcement.title}
 
         </h1>
 
 
 
 
-        <p
-
-          className="
-            text-gray-500
-          "
-
-        >
+        <p className="text-gray-500">
 
           تاریخ انتشار:
 
@@ -181,13 +167,10 @@ export default async function AnnouncementDetailPage({
             )
           }
 
-
         </p>
 
 
       </section>
-
-
 
 
 
@@ -202,19 +185,13 @@ export default async function AnnouncementDetailPage({
           mx-auto
           text-lg
           leading-10
-          whitespace-pre-line
         "
 
       >
 
-        {
-          announcement.content
-        }
-
+        {announcement.content}
 
       </section>
-
-
 
 
 
@@ -226,28 +203,16 @@ export default async function AnnouncementDetailPage({
         announcement.images &&
         announcement.images.length > 0 && (
 
-          <section
+          <GallerySlider
 
-            className="
-              max-w-5xl
-              mx-auto
-            "
+            images={
+              announcement.images
+            }
 
-          >
-
-            <GallerySlider
-
-              images={
-                announcement.images
-              }
-
-            />
-
-          </section>
+          />
 
         )
       }
-
 
 
 
