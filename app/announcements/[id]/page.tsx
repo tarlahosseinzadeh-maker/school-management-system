@@ -2,39 +2,30 @@ import Image from "next/image";
 
 import GallerySlider from "./GallerySlider";
 
-
+import {
+  getAnnouncementById,
+} from "@/src/services/announcement.service";
 
 async function getAnnouncement(
   id: string
 ) {
 
-
-  const response =
-    await fetch(
-      `http://localhost:3000/api/public/announcements/${id}`,
-      {
-        cache: "no-store",
-      }
+  const announcement =
+    await getAnnouncementById(
+      Number(id)
     );
 
 
-
-  if (!response.ok) {
-
+  if (!announcement) {
     throw new Error(
       "Announcement not found"
     );
-
   }
 
 
-
-  return response.json();
+  return announcement;
 
 }
-
-
-
 
 
 export default async function AnnouncementDetailPage({
@@ -55,10 +46,13 @@ export default async function AnnouncementDetailPage({
   } = await params;
 
 
+const announcement =
+  await getAnnouncement(id);
 
-  const announcement =
-    await getAnnouncement(id);
 
+if (!announcement) {
+  throw new Error("Announcement not found");
+}
 
 
 
