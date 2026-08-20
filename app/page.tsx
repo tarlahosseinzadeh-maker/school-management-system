@@ -4,35 +4,11 @@ import Footer from "@/components/public/Footer";
 
 import HeroSection from "@/components/public/HeroSection";
 import FeaturesSection from "@/components/public/FeaturesSection";
+import {
+  getPublishedAnnouncements,
+} from "@/src/services/announcement.service";
 
 
-
-async function getAnnouncements() {
-
-
-  const response =
-    await fetch(
-      "http://localhost:3000/api/public/announcements",
-      {
-        cache: "no-store",
-      }
-    );
-
-
-
-  if (!response.ok) {
-
-    throw new Error(
-      "Failed to fetch announcements"
-    );
-
-  }
-
-
-
-  return response.json();
-
-}
 
 
 
@@ -43,10 +19,8 @@ async function getAnnouncements() {
 export default async function Home() {
 
 
-
-  const announcements =
-    await getAnnouncements();
-
+const announcements =
+  await getPublishedAnnouncements();
 
 
 
