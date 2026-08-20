@@ -140,95 +140,200 @@ export default function FilesClient({ classes }: FilesClientProps) {
       setError(err instanceof Error ? err.message : "خطای ناشناخته");
     }
   }
+return (
+  <div dir="rtl" className="space-y-6">
 
-  return (
-    <div dir="rtl" className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold">فایل‌های آموزشی</h1>
-          <p className="mt-2 text-gray-600">مدیریت فایل‌های آموزشی کلاس‌ها</p>
-        </div>
+    <div className="flex flex-wrap items-center justify-between gap-4">
 
-        <Dialog
-          open={uploadOpen}
-          onOpenChange={(open) => {
-            setUploadOpen(open);
-            if (!open) resetForm();
-          }}
-        >
-          <DialogTrigger asChild>
-            <Button disabled={classes.length === 0}>آپلود فایل</Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>آپلود فایل آموزشی</DialogTitle>
-            </DialogHeader>
+      <div>
+        <h1 className="text-3xl font-bold">
+          فایل‌های آموزشی
+        </h1>
 
-            <div className="space-y-4">
-              <div>
-                <Label>کلاس / درس</Label>
-                <Select
-                  value={form.classSubjectId}
-                  onValueChange={(value) =>
-                    setForm((prev) => ({ ...prev, classSubjectId: value }))
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="انتخاب کنید" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {classes.map((item) => (
+        <p className="mt-2 text-gray-600">
+          مدیریت فایل‌های آموزشی کلاس‌ها
+        </p>
+      </div>
+
+
+      <Dialog
+        open={uploadOpen}
+        onOpenChange={(open) => {
+          setUploadOpen(open);
+
+          if (!open) {
+            resetForm();
+          }
+        }}
+      >
+
+        <DialogTrigger>
+          <Button disabled={classes.length === 0}>
+            آپلود فایل
+          </Button>
+        </DialogTrigger>
+
+
+
+        <DialogContent>
+
+          <DialogHeader>
+
+            <DialogTitle>
+              آپلود فایل آموزشی
+            </DialogTitle>
+
+          </DialogHeader>
+
+
+
+          <div className="space-y-4">
+
+
+            <div>
+
+              <Label>
+                کلاس / درس
+              </Label>
+
+
+              <Select
+                value={form.classSubjectId}
+                onValueChange={(value) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    classSubjectId: value ?? "",
+                  }))
+                }
+              >
+
+                <SelectTrigger>
+
+                  <SelectValue
+                    placeholder="انتخاب کنید"
+                  />
+
+                </SelectTrigger>
+
+
+                <SelectContent>
+
+                  {
+                    classes.map((item) => (
+
                       <SelectItem
                         key={item.classSubjectId}
                         value={item.classSubjectId.toString()}
                       >
-                        {item.class.className} - {item.subject.subjectName}
+
+                        {item.class.className}
+                        {" - "}
+                        {item.subject.subjectName}
+
                       </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
 
-              <div>
-                <Label>عنوان</Label>
-                <Input
-                  value={form.title}
-                  onChange={(e) =>
-                    setForm((prev) => ({ ...prev, title: e.target.value }))
+                    ))
                   }
-                />
-              </div>
 
-              <div>
-                <Label>توضیحات</Label>
-                <Textarea
-                  value={form.description}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      description: e.target.value,
-                    }))
-                  }
-                />
-              </div>
+                </SelectContent>
 
-              <div>
-                <Label>فایل</Label>
-                <Input
-                  type="file"
-                  onChange={(e) =>
-                    setSelectedFile(e.target.files?.[0] || null)
-                  }
-                />
-              </div>
+
+              </Select>
+
             </div>
 
-            <Button onClick={handleUpload} disabled={submitting}>
-              {submitting ? "در حال آپلود..." : "ثبت فایل"}
-            </Button>
-          </DialogContent>
-        </Dialog>
-      </div>
+
+
+
+            <div>
+
+              <Label>
+                عنوان
+              </Label>
+
+
+              <Input
+                value={form.title}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    title:e.target.value,
+                  }))
+                }
+              />
+
+            </div>
+
+
+
+
+            <div>
+
+              <Label>
+                توضیحات
+              </Label>
+
+
+              <Textarea
+                value={form.description}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    description:e.target.value,
+                  }))
+                }
+              />
+
+            </div>
+
+
+
+
+            <div>
+
+              <Label>
+                فایل
+              </Label>
+
+
+              <Input
+                type="file"
+                onChange={(e) =>
+                  setSelectedFile(
+                    e.target.files?.[0] ?? null
+                  )
+                }
+              />
+
+            </div>
+
+
+          </div>
+
+
+
+
+          <Button
+            onClick={handleUpload}
+            disabled={submitting}
+          >
+
+            {
+              submitting
+              ? "در حال آپلود..."
+              : "ثبت فایل"
+            }
+
+          </Button>
+
+
+        </DialogContent>
+
+
+      </Dialog>
+
+
+    </div>
 
       {loading && <p className="text-gray-500">در حال بارگذاری...</p>}
       {error && <p className="text-red-500">{error}</p>}
@@ -287,4 +392,4 @@ export default function FilesClient({ classes }: FilesClientProps) {
       )}
     </div>
   );
-}
+  }

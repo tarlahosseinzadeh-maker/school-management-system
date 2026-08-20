@@ -5,11 +5,10 @@ import { prisma } from "@/src/database/prisma";
 
 
 type Params = {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 };
-
 
 
 
@@ -22,10 +21,9 @@ export async function GET(
   try {
 
 
-    const classId =
-      Number(params.id);
+const { id } = await params;
 
-
+const classId = Number(id);
 
     console.log(
       "GET CLASS ID:",
@@ -91,11 +89,9 @@ export async function POST(
 
   try {
 
+const { id } = await params;
 
-    const classId =
-      Number(params.id);
-
-
+const classId = Number(id);
 
     console.log(
       "ADD STUDENT CLASS ID:",
