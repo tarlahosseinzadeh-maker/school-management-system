@@ -8,33 +8,28 @@ const globalForPrisma =
   };
 
 
-// Prefer DATABASE_URL when available (format: mysql://user:pass@host:port/db)
-let adapterConfig = {
-  host: "localhost",
-  port: 3306,
-  user: "root",
-  password: "",
-  database: "SchoolManagementSystem",
-};
+function getDatabaseConfig() {
 
-if (process.env.DATABASE_URL) {
-  try {
-    const url = new URL(process.env.DATABASE_URL);
-    adapterConfig = {
-      host: url.hostname || adapterConfig.host,
-      port: Number(url.port) || adapterConfig.port,
-      user: url.username || adapterConfig.user,
-      password: url.password || adapterConfig.password,
-      database: url.pathname ? url.pathname.replace(/^\//, "") : adapterConfig.database,
-    };
-  } catch (err) {
-    // ignore and fall back to defaults
-    console.warn("Failed to parse DATABASE_URL, using defaults", err);
-  }
+  const url = new URL(
+    process.env.DATABASE_URL!
+  );
+
+
+  return {
+    host: url.hostname,
+    port: Number(url.port),
+    user: url.username,
+    password: url.password,
+    database: url.pathname.replace("/", ""),
+  };
+
 }
 
-console.log("Prisma adapter config:", adapterConfig);
-const adapter = new PrismaMariaDb(adapterConfig as any);
+
+const adapter =
+  new PrismaMariaDb(
+    getDatabaseConfig()
+  );
 
 
 export const prisma =
@@ -42,7 +37,6 @@ export const prisma =
   new PrismaClient({
     adapter,
   });
-
 
 
 if (process.env.NODE_ENV !== "production") {
