@@ -6,26 +6,6 @@ import {
   getAnnouncementById,
 } from "@/src/services/announcement.service";
 
-async function getAnnouncement(
-  id: string
-) {
-
-  const announcement =
-    await getAnnouncementById(
-      Number(id)
-    );
-
-
-  if (!announcement) {
-    throw new Error(
-      "Announcement not found"
-    );
-  }
-
-
-  return announcement;
-
-}
 
 
 export default async function AnnouncementDetailPage({
@@ -42,17 +22,47 @@ export default async function AnnouncementDetailPage({
 
 
   const {
-    id
+    id,
   } = await params;
 
 
-const announcement =
-  await getAnnouncement(id);
+
+  const announcement =
+    await getAnnouncementById(
+      Number(id)
+    );
 
 
-if (!announcement) {
-  throw new Error("Announcement not found");
-}
+
+
+  if (!announcement) {
+
+    return (
+
+      <main
+        dir="rtl"
+        className="
+          min-h-screen
+          flex
+          items-center
+          justify-center
+          p-10
+        "
+      >
+
+        <h1 className="text-2xl font-bold">
+
+          اطلاعیه پیدا نشد
+
+        </h1>
+
+      </main>
+
+    );
+
+  }
+
+
 
 
 
@@ -75,16 +85,16 @@ if (!announcement) {
 
 
 
-      {/* Cover Image */}
-
       {
         announcement.coverImage && (
 
           <div
+
             className="
               max-w-4xl
               mx-auto
             "
+
           >
 
             <Image
@@ -119,26 +129,32 @@ if (!announcement) {
 
 
 
-      {/* Title */}
+
 
       <section
+
         className="
           max-w-4xl
           mx-auto
           space-y-4
         "
+
       >
 
 
         <h1
+
           className="
             text-3xl
             md:text-4xl
             font-bold
           "
+
         >
 
-          {announcement.title}
+          {
+            announcement.title
+          }
 
         </h1>
 
@@ -146,9 +162,11 @@ if (!announcement) {
 
 
         <p
+
           className="
             text-gray-500
           "
+
         >
 
           تاریخ انتشار:
@@ -167,7 +185,6 @@ if (!announcement) {
         </p>
 
 
-
       </section>
 
 
@@ -175,7 +192,8 @@ if (!announcement) {
 
 
 
-      {/* Content */}
+
+
 
       <section
 
@@ -184,6 +202,7 @@ if (!announcement) {
           mx-auto
           text-lg
           leading-10
+          whitespace-pre-line
         "
 
       >
@@ -200,16 +219,34 @@ if (!announcement) {
 
 
 
-      {/* Gallery */}
 
-      <GallerySlider
 
-        images={
-          announcement.images
-        }
 
-      />
+      {
+        announcement.images &&
+        announcement.images.length > 0 && (
 
+          <section
+
+            className="
+              max-w-5xl
+              mx-auto
+            "
+
+          >
+
+            <GallerySlider
+
+              images={
+                announcement.images
+              }
+
+            />
+
+          </section>
+
+        )
+      }
 
 
 
