@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import LogoutButton from "@/components/LogoutButton";
 
 
 const menuItems = [
@@ -67,6 +68,8 @@ export default function Sidebar(){
       bg-white
       border-l
       p-5
+      flex
+      flex-col
       "
     >
 
@@ -137,6 +140,11 @@ export default function Sidebar(){
 
 
       </nav>
+
+
+      <div className="mt-auto border-t border-gray-200 pt-4">
+        <LogoutButton />
+      </div>
 
 
     </aside>

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-
+import LogoutButton from "@/components/LogoutButton";
 const menuItems = [
   {
     title: "داشبورد اصلی",
@@ -67,6 +67,10 @@ export default function TeacherSidebar() {
           </Link>
         ))}
       </nav>
+
+      <div className="border-t border-sidebar-border p-3">
+        <LogoutButton />
+      </div>
     </aside>
   );
 }

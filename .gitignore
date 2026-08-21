@@ -44,3 +44,5 @@ next-env.d.ts
 
 # uploaded files
 /public/uploads/
+# database dumps at repo root
+/*.sql
