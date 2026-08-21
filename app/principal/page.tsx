@@ -1,5 +1,7 @@
 import { requireRole } from "@/src/utils/auth";
 import { getPrincipalDashboard } from "@/src/services/principal.service";
+import type { LucideIcon } from "lucide-react";
+import { School, UserCheck, Users } from "lucide-react";
 
 
 export default async function PrincipalPage() {
@@ -21,45 +23,22 @@ export default async function PrincipalPage() {
     <main
       dir="rtl"
       className="
-      space-y-8
+      space-y-6
       "
     >
 
 
       {/* Header */}
 
-      <section
-        className="
-        bg-white
-        border
-        rounded-xl
-        p-6
-        "
-      >
-
-        <h1
-          className="
-          text-2xl
-          font-bold
-          text-gray-800
-          "
-        >
+      <section className="page-header">
+        <h1 className="page-title">
           داشبورد مدیر
         </h1>
 
-
-        <p
-          className="
-          mt-2
-          text-gray-500
-          "
-        >
+        <p className="page-description">
           خوش آمدید {session.user.name}
         </p>
-
-
       </section>
-
 
 
 
@@ -71,7 +50,7 @@ export default async function PrincipalPage() {
         className="
         grid
         grid-cols-1
-        md:grid-cols-3
+        sm:grid-cols-3
         gap-5
         "
       >
@@ -85,6 +64,8 @@ export default async function PrincipalPage() {
             dashboard.studentsCount
           }
 
+          icon={Users}
+
         />
 
 
@@ -96,6 +77,8 @@ export default async function PrincipalPage() {
           value={
             dashboard.teachersCount
           }
+
+          icon={UserCheck}
 
         />
 
@@ -109,6 +92,8 @@ export default async function PrincipalPage() {
             dashboard.classesCount
           }
 
+          icon={School}
+
         />
 
 
@@ -118,22 +103,19 @@ export default async function PrincipalPage() {
 
 
 
-
       {/* Welcome Section */}
 
       <section
         className="
-        bg-white
-        border
-        rounded-xl
+        content-card
         p-6
+        md:p-8
         "
       >
 
         <h2
           className="
-          text-lg
-          font-semibold
+          section-title
           "
         >
           مدیریت مدرسه
@@ -143,8 +125,9 @@ export default async function PrincipalPage() {
         <p
           className="
           mt-3
-          text-gray-600
+          text-sm
           leading-8
+          text-muted-foreground
           "
         >
           از طریق منوی سمت راست می‌توانید کاربران،
@@ -167,17 +150,22 @@ export default async function PrincipalPage() {
 
 
 
+
 function StatCard({
 
   title,
 
   value,
 
+  icon: Icon,
+
 }: {
 
   title:string;
 
   value:number;
+
+  icon: LucideIcon;
 
 }) {
 
@@ -186,32 +174,47 @@ function StatCard({
 
     <div
       className="
-      bg-white
-      border
-      rounded-xl
-      p-6
-      shadow-sm
-      hover:shadow-md
-      transition
+      stat-card
+      space-y-4
       "
     >
 
-      <p
+      <div
         className="
-        text-sm
-        text-gray-500
+        flex
+        items-center
+        justify-between
+        gap-3
         "
       >
-        {title}
-      </p>
+
+        <p
+          className="
+          stat-card-label
+          "
+        >
+          {title}
+        </p>
+
+
+        <span
+          className="
+          stat-card-icon
+          "
+        >
+          <Icon className="size-5" />
+        </span>
+
+      </div>
 
 
       <p
         className="
-        mt-3
-        text-4xl
+        text-3xl
         font-bold
-        text-blue-700
+        tabular-nums
+        tracking-tight
+        text-foreground
         "
       >
         {value}

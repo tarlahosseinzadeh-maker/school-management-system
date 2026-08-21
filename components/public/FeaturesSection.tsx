@@ -1,3 +1,5 @@
+import { BookOpenCheck, School, Users } from "lucide-react";
+
 export default function FeaturesSection() {
 
 
@@ -7,21 +9,21 @@ export default function FeaturesSection() {
       title: "آموزش با کیفیت",
       description:
         "ارائه آموزش‌های استاندارد و برنامه‌ریزی شده برای رشد علمی دانش‌آموزان.",
-      icon: "🎓",
+      icon: BookOpenCheck,
     },
 
     {
       title: "کادر آموزشی مجرب",
       description:
         "همکاری با معلمان متخصص و دلسوز برای هدایت بهتر دانش‌آموزان.",
-      icon: "👨‍🏫",
+      icon: Users,
     },
 
     {
       title: "محیط آموزشی پویا",
       description:
         "ایجاد فضایی امن و مناسب برای یادگیری و پیشرفت.",
-      icon: "🏫",
+      icon: School,
     },
 
   ];
@@ -35,8 +37,9 @@ export default function FeaturesSection() {
     <section
       dir="rtl"
       className="
-        bg-white
+        bg-background
         py-16
+        md:py-20
       "
     >
 
@@ -45,18 +48,22 @@ export default function FeaturesSection() {
         className="
           mx-auto
           max-w-6xl
-          px-6
+          px-4
+          sm:px-6
         "
       >
 
 
-        <div className="text-center mb-10">
+        <div className="mb-12 text-center">
 
           <h2
             className="
+              font-heading
               text-3xl
               font-bold
-              text-blue-950
+              tracking-tight
+              text-foreground
+
             "
           >
             چرا مدرسه ما؟
@@ -66,7 +73,7 @@ export default function FeaturesSection() {
           <p
             className="
               mt-3
-              text-gray-600
+              text-muted-foreground
             "
           >
             فراهم کردن بهترین شرایط برای آموزش و رشد دانش‌آموزان
@@ -79,12 +86,13 @@ export default function FeaturesSection() {
 
 
 
+
         <div
           className="
             grid
             grid-cols-1
-            md:grid-cols-3
             gap-6
+            md:grid-cols-3
           "
         >
 
@@ -95,21 +103,42 @@ export default function FeaturesSection() {
               <div
                 key={feature.title}
                 className="
-                  bg-white
-                  rounded-xl
+                  group
+                  rounded-2xl
                   border
-                  border-blue-100
-                  p-6
+                  border-border
+                  bg-card
+                  p-7
                   text-center
-                  shadow-sm
-                  hover:shadow-md
-                  transition
+                  shadow-xs
+                  transition-all
+                  duration-200
+                  hover:-translate-y-1
+                  hover:border-primary/30
+                  hover:shadow-lg
+                  hover:shadow-primary/5
                 "
               >
 
 
-                <div className="text-4xl mb-4">
-                  {feature.icon}
+                <div
+                  className="
+                    mx-auto
+                    mb-5
+                    flex
+                    size-14
+                    items-center
+                    justify-center
+                    rounded-2xl
+                    bg-primary/10
+                    text-primary
+                    transition-colors
+                    duration-200
+                    group-hover:bg-primary
+                    group-hover:text-primary-foreground
+                  "
+                >
+                  <feature.icon className="size-7" />
                 </div>
 
 
@@ -117,7 +146,7 @@ export default function FeaturesSection() {
                   className="
                     text-xl
                     font-semibold
-                    text-blue-900
+                    text-foreground
                   "
                 >
                   {feature.title}
@@ -129,7 +158,8 @@ export default function FeaturesSection() {
                   className="
                     mt-3
                     leading-8
-                    text-gray-600
+                    text-sm
+                    text-muted-foreground
                   "
                 >
                   {feature.description}

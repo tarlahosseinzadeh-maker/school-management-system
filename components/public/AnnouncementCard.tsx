@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { CalendarDays } from "lucide-react";
 
 interface Props {
   announcement: {
@@ -15,20 +16,22 @@ export default function AnnouncementCard({ announcement }: Props) {
   return (
     <Link
       href={`/announcements/${announcement.announcementId}`}
-      className="content-card group block overflow-hidden transition-shadow hover:shadow-md"
+      className="content-card group block overflow-hidden transition-all duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5"
     >
       {announcement.coverImage && (
-        <Image
-          src={announcement.coverImage}
-          alt={announcement.title}
-          width={500}
-          height={300}
-          className="h-44 w-full object-cover"
-        />
+        <div className="overflow-hidden">
+          <Image
+            src={announcement.coverImage}
+            alt={announcement.title}
+            width={500}
+            height={300}
+            className="h-44 w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </div>
       )}
 
       <div className="p-5">
-        <h3 className="text-lg font-semibold text-foreground group-hover:text-primary">
+        <h3 className="text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
           {announcement.title}
         </h3>
 
@@ -36,7 +39,8 @@ export default function AnnouncementCard({ announcement }: Props) {
           {announcement.content}
         </p>
 
-        <p className="mt-4 text-xs text-muted-foreground">
+        <p className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-muted px-2.5 py-1 text-xs text-muted-foreground">
+          <CalendarDays className="size-3.5" />
           {new Date(announcement.createdAt).toLocaleDateString("fa-IR")}
         </p>
       </div>

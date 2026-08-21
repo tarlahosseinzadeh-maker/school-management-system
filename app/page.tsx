@@ -49,8 +49,9 @@ const announcements =
         <section
           id="announcements"
           className="
-            bg-white
+            bg-card
             py-16
+            md:py-20
           "
         >
 
@@ -59,7 +60,8 @@ const announcements =
             className="
               mx-auto
               max-w-6xl
-              px-6
+              px-4
+              sm:px-6
             "
           >
 
@@ -67,17 +69,19 @@ const announcements =
 
             <div
               className="
-                mb-10
-                text-right
+                mb-12
+                text-center
               "
             >
 
 
               <h2
                 className="
+                  font-heading
                   text-3xl
                   font-bold
-                  text-gray-900
+                  tracking-tight
+                  text-foreground
                 "
               >
                 آخرین اطلاعیه‌های مدرسه
@@ -88,7 +92,7 @@ const announcements =
               <p
                 className="
                   mt-3
-                  text-gray-600
+                  text-muted-foreground
                 "
               >
                 اطلاعیه‌ها و اخبار رسمی مدرسه
@@ -116,8 +120,7 @@ const announcements =
 
 
               {
-                announcements.map(
-                  (item:any)=>(
+                announcements.map(                  (item:any)=>(
 
 
                     <AnnouncementCard

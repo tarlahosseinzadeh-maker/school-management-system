@@ -2,6 +2,16 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import {
+  BookOpen,
+  ClipboardList,
+  GraduationCap,
+  LayoutDashboard,
+  Megaphone,
+  School,
+  UserPlus,
+  Users,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import LogoutButton from "@/components/LogoutButton";
 
@@ -10,30 +20,37 @@ const menuItems = [
   {
     title: "داشبورد",
     href: "/principal",
+    icon: LayoutDashboard,
   },
   {
     title: "مدیریت کاربران",
     href: "/principal/users",
+    icon: Users,
   },
   {
     title: "مدیریت کلاس‌ها",
     href: "/principal/classes",
+    icon: School,
   },
   {
     title: "مدیریت دروس",
     href: "/principal/subjects",
+    icon: BookOpen,
   },
   {
     title: "پیش‌ثبت‌نام‌ها",
     href: "/principal/pre-registrations",
+    icon: UserPlus,
   },
   {
     title: "اطلاعیه‌ها",
     href: "/principal/announcements",
+    icon: Megaphone,
   },
   {
     title: "کارنامه‌ها",
     href: "/principal/grades",
+    icon: ClipboardList,
   },
 ];
 
@@ -52,7 +69,6 @@ function isActive(
 }
 
 
-
 export default function Sidebar(){
 
   const pathname = usePathname();
@@ -62,42 +78,36 @@ export default function Sidebar(){
 
     <aside
       dir="rtl"
-      className="
-      w-64
-      min-h-screen
-      bg-white
-      border-l
-      p-5
-      flex
-      flex-col
-      "
+      className="sidebar-shell"
     >
 
 
-      <div className="mb-8">
+      <div className="sidebar-brand">
 
-        <h2 className="
-          text-xl
-          font-bold
-          text-gray-800
-        ">
-          سیستم مدیریت مدرسه
-        </h2>
+        <div className="flex items-center gap-3">
+
+          <span className="brand-mark">
+            <GraduationCap className="size-5" />
+          </span>
 
 
-        <p className="
-          text-sm
-          text-gray-500
-          mt-2
-        ">
-          پنل مدیر
-        </p>
+          <div>
+            <h2 className="sidebar-brand-title">
+              سیستم مدیریت مدرسه
+            </h2>
+
+            <p className="sidebar-brand-subtitle">
+              پنل مدیر
+            </p>
+          </div>
+
+        </div>
 
       </div>
 
 
 
-      <nav className="space-y-2">
+      <nav className="sidebar-nav">
 
 
         {
@@ -111,7 +121,7 @@ export default function Sidebar(){
 
               className={cn(
 
-                "block rounded-lg px-4 py-3 text-sm transition",
+                "sidebar-nav-link",
 
                 isActive(
                   pathname,
@@ -120,15 +130,17 @@ export default function Sidebar(){
 
                 ?
 
-                "bg-blue-50 text-blue-700 font-semibold"
+                "sidebar-nav-link-active"
 
                 :
 
-                "text-gray-700 hover:bg-gray-100"
+                ""
 
               )}
 
             >
+
+              <item.icon className="size-4 shrink-0" />
 
               {item.title}
 
@@ -142,7 +154,7 @@ export default function Sidebar(){
       </nav>
 
 
-      <div className="mt-auto border-t border-gray-200 pt-4">
+      <div className="sidebar-footer">
         <LogoutButton />
       </div>
 

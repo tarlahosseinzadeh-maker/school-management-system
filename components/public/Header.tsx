@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { GraduationCap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -10,10 +11,18 @@ const navLinks = [
 
 export default function Header() {
   return (
-    <header dir="rtl" className="border-b border-border bg-card">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-xl font-semibold text-foreground">
-          مدرسه ما
+    <header
+      dir="rtl"
+      className="sticky top-0 z-40 border-b border-border/80 bg-card/80 backdrop-blur-md"
+    >
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6 sm:py-4">
+        <Link href="/" className="flex items-center gap-2.5">
+          <span className="brand-mark size-8 rounded-lg">
+            <GraduationCap className="size-4" />
+          </span>
+          <span className="font-heading text-lg font-bold text-foreground">
+            مدرسه ما
+          </span>
         </Link>
 
         <nav className="flex flex-wrap items-center gap-1 sm:gap-2">
@@ -22,9 +31,9 @@ export default function Header() {
               key={link.href}
               href={link.href}
               className={cn(
-                "rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground",
+                "rounded-full px-3 py-1.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground sm:px-4 sm:py-2",
                 link.href === "/login" &&
-                  "bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground"
+                  "bg-primary text-primary-foreground shadow-sm shadow-primary/25 hover:bg-primary/90 hover:text-primary-foreground"
               )}
             >
               {link.label}

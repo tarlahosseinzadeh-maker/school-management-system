@@ -99,7 +99,7 @@ export default function UserTable({
 
         <TableHeader>
 
-          <TableRow className="bg-gray-50">
+          <TableRow>
 
 
             <TableHead className="text-right">
