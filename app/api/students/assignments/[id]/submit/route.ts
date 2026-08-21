@@ -58,6 +58,72 @@ export async function POST(
     }
 
 
+    const assignment =
+      await prisma.assignments.findFirst({
+
+        where:{
+          assignmentId,
+
+          classSubject:{
+            class:{
+              students:{
+                some:{
+                  userId: studentId
+                }
+              }
+            }
+          }
+
+        }
+
+      });
+
+
+    if(!assignment){
+
+      return NextResponse.json(
+        {
+          error:"ASSIGNMENT_NOT_FOUND"
+        },
+        {
+          status:404
+        }
+      );
+
+    }
+
+
+    if(assignment.status !== "ACTIVE"){
+
+      return NextResponse.json(
+        {
+          error:"ASSIGNMENT_CLOSED"
+        },
+        {
+          status:403
+        }
+      );
+
+    }
+
+
+    if(
+      assignment.deadline &&
+      new Date(assignment.deadline) < new Date()
+    ){
+
+      return NextResponse.json(
+        {
+          error:"ASSIGNMENT_EXPIRED"
+        },
+        {
+          status:403
+        }
+      );
+
+    }
+
+
 
     const formData = await request.formData();
 
@@ -131,40 +197,6 @@ export async function POST(
       uploadPath,
       buffer
     );
-
-const assignment =
-  await prisma.assignments.findFirst({
-
-    where:{
-      assignmentId,
-
-      classSubject:{
-        class:{
-          students:{
-            some:{
-              userId: studentId
-            }
-          }
-        }
-      }
-
-    }
-
-  });
-
-
-if(!assignment){
-
-  return NextResponse.json(
-    {
-      error:"ASSIGNMENT_NOT_FOUND"
-    },
-    {
-      status:404
-    }
-  );
-
-}
 
     const submission =
       await prisma.assignment_submissions.create({

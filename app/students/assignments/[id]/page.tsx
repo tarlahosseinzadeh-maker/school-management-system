@@ -1,12 +1,27 @@
 "use client";
 
 import {
-  useState
+  useState,
+  useEffect
 } from "react";
 
 import {
   useParams
 } from "next/navigation";
+
+import {
+  Clock,
+  Lock
+} from "lucide-react";
+
+
+
+type StudentAssignment = {
+  assignmentId:number;
+  status:string;
+  deadline:string;
+};
+
 
 
 export default function AssignmentDetailPage(){
@@ -28,6 +43,74 @@ export default function AssignmentDetailPage(){
 
   const [message,setMessage] =
     useState("");
+
+
+  const [assignment,setAssignment] =
+    useState<StudentAssignment | null>(null);
+
+
+  const [checking,setChecking] =
+    useState(true);
+
+
+
+
+  useEffect(()=>{
+
+
+    let active = true;
+
+
+    fetch("/api/students/assignments")
+      .then(res=>res.json())
+      .then(data=>{
+
+        if(!active)
+          return;
+
+        const found =
+          Array.isArray(data)
+          ?
+          data.find(
+            item=>
+              item.assignmentId === Number(id)
+          )
+          :
+          null;
+
+        setAssignment(found || null);
+
+      })
+      .catch(()=>{})
+      .finally(()=>{
+
+        if(active)
+          setChecking(false);
+
+      });
+
+
+    return ()=>{
+
+      active = false;
+
+    };
+
+
+  },[id]);
+
+
+
+
+  const isClosed =
+    assignment !== null &&
+    assignment.status !== "ACTIVE";
+
+
+  const isExpired =
+    assignment !== null &&
+    assignment.status === "ACTIVE" &&
+    new Date(assignment.deadline) < new Date();
 
 
 
@@ -96,13 +179,21 @@ export default function AssignmentDetailPage(){
       }
       else{
 
-
         setMessage(
+          data.error === "ASSIGNMENT_CLOSED"
+          ?
+          "این تکلیف بسته شده است"
+          :
+          data.error === "ASSIGNMENT_EXPIRED"
+          ?
+          "مهلت ارسال این تکلیف به پایان رسیده است"
+          :
           data.error || "خطا در ارسال فایل"
         );
 
 
       }
+
 
 
     }
@@ -129,6 +220,7 @@ export default function AssignmentDetailPage(){
     }
 
 
+
   }
 
 
@@ -139,12 +231,11 @@ export default function AssignmentDetailPage(){
 
     <div
       className="
+        content-card
         max-w-xl
         mx-auto
-        bg-white
-        border
-        rounded-xl
         p-6
+        md:p-8
         space-y-5
       "
       dir="rtl"
@@ -153,8 +244,7 @@ export default function AssignmentDetailPage(){
 
       <h1
         className="
-          text-xl
-          font-bold
+          page-title
         "
       >
 
@@ -165,7 +255,7 @@ export default function AssignmentDetailPage(){
 
 
       <p
-        className="text-gray-500"
+        className="page-description"
       >
 
         شماره تکلیف:
@@ -174,6 +264,58 @@ export default function AssignmentDetailPage(){
 
       </p>
 
+
+
+
+      {
+        checking
+        ?
+        (
+          <p className="ui-loading">
+            در حال بررسی وضعیت تکلیف...
+          </p>
+        )
+        :
+        isClosed
+        ?
+        (
+
+          <div
+            className="
+              ui-error
+              flex
+              items-center
+              gap-2
+              justify-center
+            "
+          >
+            <Lock className="size-4 shrink-0" />
+            این تکلیف بسته شده و امکان ارسال ندارد
+          </div>
+
+        )
+        :
+        isExpired
+        ?
+        (
+
+          <div
+            className="
+              ui-error
+              flex
+              items-center
+              gap-2
+              justify-center
+            "
+          >
+            <Clock className="size-4 shrink-0" />
+            مهلت ارسال این تکلیف به پایان رسیده است
+          </div>
+
+        )
+        :
+        (
+          <>
 
 
 
@@ -190,13 +332,22 @@ export default function AssignmentDetailPage(){
 
         className="
           border
+          border-border
           rounded-lg
           p-2
           w-full
+          file:ml-3
+          file:rounded-md
+          file:border-0
+          file:bg-primary/10
+          file:px-3
+          file:py-1.5
+          file:text-primary
+          file:text-sm
+          file:font-medium
         "
 
       />
-
 
 
 
@@ -209,11 +360,14 @@ export default function AssignmentDetailPage(){
 
         className="
           w-full
-          bg-blue-600
-          hover:bg-blue-700
+          bg-primary
+          hover:bg-primary/90
           text-white
+          font-medium
           rounded-lg
-          py-2
+          py-2.5
+          transition-colors
+          disabled:opacity-50
         "
 
       >
@@ -230,6 +384,11 @@ export default function AssignmentDetailPage(){
       </button>
 
 
+          </>
+        )
+      }
+
+
 
 
       {
@@ -239,6 +398,7 @@ export default function AssignmentDetailPage(){
           className="
             text-center
             text-sm
+            text-muted-foreground
           "
         >
 

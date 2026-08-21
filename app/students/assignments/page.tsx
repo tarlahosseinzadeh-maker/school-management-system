@@ -26,6 +26,57 @@ type AssignmentItem = {
 
 
 
+const statusLabels: Record<string,string> = {
+
+  ACTIVE:"فعال",
+
+  CLOSED:"بسته شده",
+
+  ARCHIVED:"آرشیو",
+
+};
+
+
+
+const statusStyles: Record<string,string> = {
+
+  ACTIVE:"bg-primary/10 text-primary font-medium",
+
+  CLOSED:"bg-destructive/10 text-destructive font-medium",
+
+  ARCHIVED:"bg-muted text-muted-foreground",
+
+};
+
+
+
+function effectiveStatus(
+
+  status:string,
+
+  deadline:string
+
+){
+
+
+  if(status !== "ACTIVE"){
+
+    return status;
+
+  }
+
+
+  return new Date(deadline) < new Date()
+
+    ? "CLOSED"
+
+    : "ACTIVE";
+
+
+}
+
+
+
 
 export default function StudentAssignmentsPage() {
 
@@ -225,16 +276,30 @@ export default function StudentAssignmentsPage() {
 
 
                       <span
-                        className="
+                        className={`
                           text-sm
                           px-3
                           py-1
                           rounded-full
-                          bg-gray-100
-                        "
+                          ${
+                            statusStyles[
+                              effectiveStatus(
+                                item.status,
+                                item.deadline
+                              )
+                            ]
+                          }
+                        `}
                       >
 
-                        {item.status}
+                        {
+                          statusLabels[
+                            effectiveStatus(
+                              item.status,
+                              item.deadline
+                            )
+                          ]
+                        }
 
                       </span>
 

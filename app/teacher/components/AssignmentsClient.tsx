@@ -47,6 +47,37 @@ const statusLabels: Record<string,string> = {
 };
 
 
+const statusStyles: Record<string,string> = {
+  ACTIVE:"bg-primary/10 text-primary",
+  CLOSED:"bg-destructive/10 text-destructive",
+  ARCHIVED:"bg-muted text-muted-foreground",
+};
+
+
+
+function effectiveStatus(
+  status:string,
+  deadline:string
+){
+
+
+  if(status !== "ACTIVE"){
+
+    return status;
+
+  }
+
+
+  return new Date(deadline) < new Date()
+
+    ? "CLOSED"
+
+    : "ACTIVE";
+
+
+}
+
+
 
 export default function AssignmentsClient({
   classes,
@@ -503,8 +534,316 @@ export default function AssignmentsClient({
             </DialogHeader>
 
 
+            <div className="space-y-4">
+
+
+              <div className="form-field">
+
+                <Label htmlFor="create-title">
+                  عنوان
+                </Label>
+
+                <Input
+                  id="create-title"
+                  value={form.title}
+                  onChange={(e)=>
+                    setForm({
+                      ...form,
+                      title:e.target.value
+                    })
+                  }
+                />
+
+              </div>
+
+
+              <div className="form-field">
+
+                <Label htmlFor="create-description">
+                  توضیحات
+                </Label>
+
+                <Textarea
+                  id="create-description"
+                  rows={4}
+                  value={form.description}
+                  onChange={(e)=>
+                    setForm({
+                      ...form,
+                      description:e.target.value
+                    })
+                  }
+                />
+
+              </div>
+
+
+              <div className="form-field">
+
+                <Label htmlFor="create-deadline">
+                  مهلت تحویل
+                </Label>
+
+                <Input
+                  id="create-deadline"
+                  type="datetime-local"
+                  value={form.deadline}
+                  onChange={(e)=>
+                    setForm({
+                      ...form,
+                      deadline:e.target.value
+                    })
+                  }
+                />
+
+              </div>
+
+
+              <div className="form-field">
+
+                <Label>
+                  کلاس / درس
+                </Label>
+
+                <Select
+                  value={form.classSubjectId}
+                  onValueChange={(value)=>{
+                    if(value === null)
+                      return;
+
+                    setForm({
+                      ...form,
+                      classSubjectId:value
+                    });
+                  }}
+                >
+
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="انتخاب کنید" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {
+                      classes.map(cs=>(
+                        <SelectItem
+                          key={cs.classSubjectId}
+                          value={cs.classSubjectId.toString()}
+                        >
+                          {cs.class.className} - {cs.subject.subjectName}
+                        </SelectItem>
+                      ))
+                    }
+                  </SelectContent>
+
+                </Select>
+
+              </div>
+
+
+              {error && (
+                <div className="ui-error">
+                  {error}
+                </div>
+              )}
+
+
+            </div>
+
+
+            <div className="mt-6 flex justify-end gap-2">
+
+              <Button
+                variant="outline"
+                onClick={()=>
+                  setCreateOpen(false)
+                }
+              >
+                انصراف
+              </Button>
+
+
+              <Button
+                disabled={submitting}
+                onClick={
+                  handleCreate
+                }
+              >
+                {submitting ? "در حال ثبت..." : "ثبت تکلیف"}
+              </Button>
+
+            </div>
+
+
           </DialogContent>
 
+
+        </Dialog>
+
+
+
+        <Dialog
+          open={editTarget !== null}
+          onOpenChange={(open)=>{
+            if(!open){
+              setEditTarget(null);
+            }
+          }}
+        >
+
+          <DialogContent>
+
+            <DialogHeader>
+
+              <DialogTitle>
+                ویرایش تکلیف
+              </DialogTitle>
+
+            </DialogHeader>
+
+
+            <div className="space-y-4">
+
+
+              <div className="form-field">
+
+                <Label htmlFor="edit-title">
+                  عنوان
+                </Label>
+
+                <Input
+                  id="edit-title"
+                  value={form.title}
+                  onChange={(e)=>
+                    setForm({
+                      ...form,
+                      title:e.target.value
+                    })
+                  }
+                />
+
+              </div>
+
+
+              <div className="form-field">
+
+                <Label htmlFor="edit-description">
+                  توضیحات
+                </Label>
+
+                <Textarea
+                  id="edit-description"
+                  rows={4}
+                  value={form.description}
+                  onChange={(e)=>
+                    setForm({
+                      ...form,
+                      description:e.target.value
+                    })
+                  }
+                />
+
+              </div>
+
+
+              <div className="form-field">
+
+                <Label htmlFor="edit-deadline">
+                  مهلت تحویل
+                </Label>
+
+                <Input
+                  id="edit-deadline"
+                  type="datetime-local"
+                  value={form.deadline}
+                  onChange={(e)=>
+                    setForm({
+                      ...form,
+                      deadline:e.target.value
+                    })
+                  }
+                />
+
+              </div>
+
+
+              <div className="form-field">
+
+                <Label>
+                  وضعیت
+                </Label>
+
+                <Select
+                  value={form.status}
+                  onValueChange={(value)=>{
+                    if(value === null)
+                      return;
+
+                    setForm({
+                      ...form,
+                      status:value
+                    });
+                  }}
+                >
+
+                  <SelectTrigger className="w-full">
+                    <SelectValue />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    {
+                      Object.entries(statusLabels).map(
+                        ([value,label])=>(
+                          <SelectItem
+                            key={value}
+                            value={value}
+                          >
+                            {label}
+                          </SelectItem>
+                        )
+                      )
+                    }
+                  </SelectContent>
+
+                </Select>
+
+              </div>
+
+
+              {error && (
+                <div className="ui-error">
+                  {error}
+                </div>
+              )}
+
+
+            </div>
+
+
+            <div className="mt-6 flex justify-end gap-2">
+
+              <Button
+                variant="outline"
+                onClick={()=>
+                  setEditTarget(null)
+                }
+              >
+                انصراف
+              </Button>
+
+
+              <Button
+                disabled={submitting}
+                onClick={
+                  handleUpdate
+                }
+              >
+                {submitting ? "در حال ذخیره..." : "ذخیره تغییرات"}
+              </Button>
+
+            </div>
+
+
+          </DialogContent>
 
         </Dialog>
 
@@ -534,9 +873,41 @@ export default function AssignmentsClient({
         >
 
 
-          <h3 className="text-xl font-bold">
-            {assignment.title}
-          </h3>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+
+            <h3 className="text-xl font-bold">
+              {assignment.title}
+            </h3>
+
+
+            <span
+              className={`
+                rounded-full
+                px-3
+                py-1
+                text-xs
+                font-medium
+                ${
+                  statusStyles[
+                    effectiveStatus(
+                      assignment.status,
+                      assignment.deadline
+                    )
+                  ]
+                }
+              `}
+            >
+              {
+                statusLabels[
+                  effectiveStatus(
+                    assignment.status,
+                    assignment.deadline
+                  )
+                ]
+              }
+            </span>
+
+          </div>
 
 
 
@@ -575,7 +946,7 @@ export default function AssignmentsClient({
 
 
 
-          <p>
+          <p className="flex items-center gap-2">
             مهلت:
             {" "}
             {
@@ -584,6 +955,25 @@ export default function AssignmentsClient({
               )
               .toLocaleDateString(
                 "fa-IR"
+              )
+            }
+
+            {
+              assignment.status === "ACTIVE" &&
+              new Date(assignment.deadline) < new Date() && (
+                <span
+                  className="
+                    rounded-full
+                    bg-destructive/10
+                    px-2
+                    py-0.5
+                    text-xs
+                    font-medium
+                    text-destructive
+                  "
+                >
+                  مهلت تمام شده - ارسال بسته است
+                </span>
               )
             }
           </p>
