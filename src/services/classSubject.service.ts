@@ -12,10 +12,12 @@ import type {
 
 
 
+
 // Create ClassSubject
 export async function createClassSubject(
   data: CreateClassSubjectInput
 ) {
+
 
 
   // بررسی وجود کلاس
@@ -37,8 +39,6 @@ export async function createClassSubject(
     );
 
   }
-
-
 
 
 
@@ -64,6 +64,15 @@ export async function createClassSubject(
 
 
 
+  // بررسی تطابق پایه تحصیلی
+  if (subject.gradeLevel !== schoolClass.gradeLevel) {
+
+    throw new Error(
+      "SUBJECT_GRADE_MISMATCH"
+    );
+
+  }
+
 
 
   // بررسی وجود معلم
@@ -75,7 +84,6 @@ export async function createClassSubject(
       },
 
     });
-
 
   if (!teacher) {
 
@@ -97,8 +105,7 @@ export async function createClassSubject(
       teacherId: data.teacherId,
     },
   },
-});
-
+  });
 
 
 
@@ -109,8 +116,6 @@ export async function createClassSubject(
     );
 
   }
-
-
 
 
 
@@ -139,11 +144,8 @@ export async function createClassSubject(
   });
 
 
+
 }
-
-
-
-
 
 
 
@@ -153,7 +155,6 @@ export async function createClassSubject(
 export async function getClassSubjectById(
   classSubjectId: number
 ) {
-
 
   const item =
     await findClassSubjectById(
@@ -175,11 +176,8 @@ export async function getClassSubjectById(
   return item;
 
 
+
 }
-
-
-
-
 
 
 
@@ -191,6 +189,53 @@ export async function updateClassSubject(
   data: UpdateClassSubjectInput
 ) {
 
+  // اگر کلاس تغییر کرده، اعتبارسنجی کن
+  if (data.classId) {
+
+    const schoolClass =
+      await prisma.physicalclasses.findUnique({
+        where: { classId: data.classId },
+      });
+
+    if (!schoolClass) {
+
+      throw new Error(
+        "CLASS_NOT_FOUND"
+      );
+
+    }
+
+    // اگر subject تغییر کرده، اعتبارسنجی کن
+    if (data.subjectId) {
+
+      const subject =
+        await prisma.subjects.findUnique({
+          where: { subjectId: data.subjectId },
+        });
+
+      if (!subject) {
+
+        throw new Error(
+          "SUBJECT_NOT_FOUND"
+        );
+
+      }
+
+
+
+      if (subject.gradeLevel !== schoolClass.gradeLevel) {
+
+        throw new Error(
+          "SUBJECT_GRADE_MISMATCH"
+        );
+
+      }
+
+    }
+
+  }
+
+
 
   return await prisma.classsubjects.update({
 
@@ -199,7 +244,6 @@ export async function updateClassSubject(
       classSubjectId,
 
     },
-
 
     data: {
 
@@ -210,7 +254,6 @@ export async function updateClassSubject(
       teacherId: data.teacherId,
 
     },
-
 
     include: {
 
@@ -223,7 +266,9 @@ export async function updateClassSubject(
     },
 
 
+
   });
+
 
 
 }

@@ -14,9 +14,19 @@ import { Input } from "@/components/ui/input";
 
 import { Label } from "@/components/ui/label";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import { useState } from "react";
 
 import type { SchoolClass } from "../types";
+
+import { GRADE_OPTIONS } from "@/src/constants/grades";
 
 
 
@@ -31,6 +41,7 @@ export default function EditClassDialog({
   schoolClass,
   onSuccess,
 }: EditClassDialogProps) {
+
 
 
   const [open, setOpen] = useState(false);
@@ -76,8 +87,6 @@ export default function EditClassDialog({
 
 
 
-
-
   async function handleSubmit() {
 
 
@@ -96,7 +105,6 @@ export default function EditClassDialog({
 
         capacity:
           Number(formData.capacity),
-
 
         academicYear:
           formData.academicYear,
@@ -144,9 +152,11 @@ export default function EditClassDialog({
         console.error(data);
 
 
+
         alert(
           "ویرایش کلاس ناموفق بود"
         );
+
 
 
         return;
@@ -157,9 +167,7 @@ export default function EditClassDialog({
 
 
 
-
       onSuccess();
-
 
       setOpen(false);
 
@@ -171,17 +179,14 @@ export default function EditClassDialog({
       console.error(error);
 
 
+
       alert(
         "خطای ارتباط با سرور"
       );
 
     }
 
-
   }
-
-
-
 
 
 
@@ -202,6 +207,7 @@ export default function EditClassDialog({
       <DialogTrigger>
 
 
+
         <Button
 
           size="sm"
@@ -215,9 +221,8 @@ export default function EditClassDialog({
         </Button>
 
 
+
       </DialogTrigger>
-
-
 
 
 
@@ -234,7 +239,9 @@ export default function EditClassDialog({
       >
 
 
+
         <DialogHeader>
+
 
 
           <DialogTitle>
@@ -244,9 +251,8 @@ export default function EditClassDialog({
           </DialogTitle>
 
 
+
         </DialogHeader>
-
-
 
 
 
@@ -272,6 +278,7 @@ export default function EditClassDialog({
             </Label>
 
 
+
             <Input
 
               name="className"
@@ -292,8 +299,6 @@ export default function EditClassDialog({
 
 
 
-
-
           <div className="space-y-2">
 
             <Label>
@@ -301,23 +306,53 @@ export default function EditClassDialog({
             </Label>
 
 
-            <Input
 
-              name="gradeLevel"
+            <Select
 
-              value={
-                formData.gradeLevel
+              value={formData.gradeLevel}
+
+              onValueChange={(value) =>
+                setFormData({
+                  ...formData,
+                  gradeLevel: value || "",
+                })
               }
 
-              onChange={
-                handleChange
-              }
+            >
 
-            />
+              <SelectTrigger>
+
+                <SelectValue placeholder="انتخاب پایه" />
+
+              </SelectTrigger>
+
+
+
+              <SelectContent>
+
+                {GRADE_OPTIONS.map((grade) => (
+
+                  <SelectItem
+
+                    key={grade.value}
+
+                    value={grade.value}
+
+                  >
+
+                    {grade.label}
+
+                  </SelectItem>
+
+                ))}
+
+              </SelectContent>
+
+            </Select>
+
+
 
           </div>
-
-
 
 
 
@@ -328,6 +363,7 @@ export default function EditClassDialog({
             <Label>
               ظرفیت
             </Label>
+
 
 
             <Input
@@ -352,13 +388,12 @@ export default function EditClassDialog({
 
 
 
-
-
           <div className="space-y-2">
 
             <Label>
               سال تحصیلی
             </Label>
+
 
 
             <Input
@@ -376,8 +411,6 @@ export default function EditClassDialog({
             />
 
           </div>
-
-
 
 
 
@@ -418,6 +451,7 @@ export default function EditClassDialog({
     </Dialog>
 
   );
+
 
 
 }

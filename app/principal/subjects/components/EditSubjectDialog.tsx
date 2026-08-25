@@ -11,13 +11,28 @@ import {
 
 import { Button } from "@/components/ui/button";
 
+
 import { Input } from "@/components/ui/input";
 
+
 import { Textarea } from "@/components/ui/textarea";
+
 
 import { useState } from "react";
 
 import type { Subject } from "../types";
+
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { Label } from "@/components/ui/label";
+
+import { GRADE_OPTIONS } from "@/src/constants/grades";
 
 
 
@@ -34,6 +49,7 @@ export default function EditSubjectDialog({
   subject,
   onSuccess,
 }: EditSubjectDialogProps) {
+
 
 
   const [open, setOpen] =
@@ -61,9 +77,6 @@ export default function EditSubjectDialog({
 
 
 
-
-
-
   function handleChange(
     e:
       React.ChangeEvent<
@@ -81,11 +94,7 @@ export default function EditSubjectDialog({
 
     });
 
-
   }
-
-
-
 
 
 
@@ -135,10 +144,8 @@ export default function EditSubjectDialog({
 
 
 
-
       const data =
         await response.json();
-
 
 
 
@@ -150,9 +157,11 @@ export default function EditSubjectDialog({
         console.error(data);
 
 
+
         alert(
           "ویرایش درس ناموفق بود"
         );
+
 
 
         return;
@@ -163,10 +172,7 @@ export default function EditSubjectDialog({
 
 
 
-
-
       onSuccess();
-
 
       setOpen(false);
 
@@ -178,17 +184,14 @@ export default function EditSubjectDialog({
       console.error(error);
 
 
+
       alert(
         "خطای ارتباط با سرور"
       );
 
     }
 
-
   }
-
-
-
 
 
 
@@ -205,13 +208,11 @@ export default function EditSubjectDialog({
 
       <DialogTrigger>
 
-<Button>
-  ویرایش
-</Button>
+        <Button>
+          ویرایش
+        </Button>
 
       </DialogTrigger>
-
-
 
 
 
@@ -221,9 +222,7 @@ export default function EditSubjectDialog({
         dir="rtl"
       >
 
-
         <DialogHeader>
-
 
           <DialogTitle>
 
@@ -231,10 +230,7 @@ export default function EditSubjectDialog({
 
           </DialogTitle>
 
-
         </DialogHeader>
-
-
 
 
 
@@ -266,25 +262,56 @@ export default function EditSubjectDialog({
 
 
 
+          <div className="space-y-2">
+
+            <Label>پایه تحصیلی</Label>
 
 
-          <Input
 
-            name="gradeLevel"
+            <Select
 
-            value={
-              formData.gradeLevel
-            }
+              value={formData.gradeLevel}
 
-            onChange={
-              handleChange
-            }
+              onValueChange={(value) =>
+                setFormData({
+                  ...formData,
+                  gradeLevel: value || "",
+                })
+              }
 
-            placeholder="پایه تحصیلی"
+            >
 
-          />
+              <SelectTrigger>
+
+                <SelectValue placeholder="انتخاب پایه" />
+
+              </SelectTrigger>
 
 
+
+              <SelectContent>
+
+                {GRADE_OPTIONS.map((grade) => (
+
+                  <SelectItem
+
+                    key={grade.value}
+
+                    value={grade.value}
+
+                  >
+
+                    {grade.label}
+
+                  </SelectItem>
+
+                ))}
+
+              </SelectContent>
+
+            </Select>
+
+          </div>
 
 
 
@@ -305,8 +332,6 @@ export default function EditSubjectDialog({
             placeholder="توضیحات"
 
           />
-
-
 
 
 
@@ -341,8 +366,11 @@ export default function EditSubjectDialog({
 
 
 
+
     </Dialog>
 
   );
+
+
 
 }

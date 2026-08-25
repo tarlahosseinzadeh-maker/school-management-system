@@ -43,35 +43,36 @@ export default function UsersClient() {
 
 
 
-
-
   useEffect(()=>{
+
 
 
     const timer =
       setTimeout(()=>{
 
 
+
         setSearch(searchValue);
+
 
 
       },500);
 
 
 
-
     return ()=>{
 
+
+
       clearTimeout(timer);
+
+
 
     };
 
 
+
   },[searchValue]);
-
-
-
-
 
 
 
@@ -89,68 +90,11 @@ export default function UsersClient() {
 
 
 
+  const [dataLoading, setDataLoading] = useState(false);
 
-
-
-
-
-
-  if (loading) {
-
-    return (
-
-      <div
-        dir="rtl"
-        className="
-        min-h-[200px]
-        flex
-        items-center
-        justify-center
-        text-gray-500
-        "
-      >
-
-        در حال بارگذاری...
-
-      </div>
-
-    );
-
-  }
-
-
-
-
-
-
-  if (error) {
-
-    return (
-
-      <div
-        dir="rtl"
-        className="
-        rounded-xl
-        border
-        bg-red-50
-        p-5
-        text-red-700
-        "
-      >
-
-        {error}
-
-      </div>
-
-    );
-
-  }
-
-
-
-
-
-
+  useEffect(() => {
+    setDataLoading(loading);
+  }, [loading]);
 
 
 
@@ -183,6 +127,7 @@ export default function UsersClient() {
 
 
 
+
         <div
 
           className="
@@ -198,6 +143,8 @@ export default function UsersClient() {
 
 
           <div>
+
+
 
 
             <h1
@@ -233,9 +180,8 @@ export default function UsersClient() {
 
 
 
+
           </div>
-
-
 
 
 
@@ -249,16 +195,12 @@ export default function UsersClient() {
 
 
 
-
         </div>
 
 
 
 
       </section>
-
-
-
 
 
 
@@ -294,7 +236,6 @@ export default function UsersClient() {
 
 
 
-
           <input
 
             className="
@@ -315,8 +256,6 @@ export default function UsersClient() {
             }
 
           />
-
-
 
 
 
@@ -347,9 +286,11 @@ export default function UsersClient() {
 
 
 
+
             <option value="">
               همه کاربران
             </option>
+
 
 
 
@@ -379,25 +320,44 @@ export default function UsersClient() {
 
 
 
-
         </div>
 
 
 
+        {dataLoading && (
+          <div
+            className="
+            flex
+            min-h-[200px]
+            items-center
+            justify-center
+            text-gray-500
+            "
+          >
+            در حال بارگذاری...
+          </div>
+        )}
 
+        {!dataLoading && error && (
+          <div
+            className="
+            rounded-xl
+            border
+            bg-red-50
+            p-5
+            text-red-700
+            "
+          >
+            {error}
+          </div>
+        )}
 
-
-
-
-
-        <UserTable
-
-          users={users}
-
-          onSuccess={refresh}
-
-        />
-
+        {!dataLoading && !error && (
+          <UserTable
+            users={users}
+            onSuccess={refresh}
+          />
+        )}
 
 
 
@@ -407,10 +367,7 @@ export default function UsersClient() {
 
 
 
-
-
     </main>
 
   );
-
 }

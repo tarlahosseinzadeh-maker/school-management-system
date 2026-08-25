@@ -20,6 +20,18 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { useState } from "react";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { Label } from "@/components/ui/label";
+
+import { GRADE_OPTIONS } from "@/src/constants/grades";
+
 
 
 type CreateSubjectDialogProps = {
@@ -32,7 +44,8 @@ type CreateSubjectDialogProps = {
 
 export default function CreateSubjectDialog({
   onSuccess,
-}: CreateSubjectDialogProps) {
+}:CreateSubjectDialogProps){
+
 
 
   const [open, setOpen] =
@@ -50,6 +63,9 @@ export default function CreateSubjectDialog({
 
   });
 
+
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
 
 
@@ -73,19 +89,83 @@ export default function CreateSubjectDialog({
     });
 
 
+    setErrors((prev) => ({
+      ...prev,
+      [e.target.name]: "",
+    }));
+
+  }
+
+
+
+  function handleSelectChange(value: string | null) {
+    if (value) {
+      setFormData((prev) => ({
+        ...prev,
+        gradeLevel: value,
+      }));
+      setErrors((prev) => ({
+        ...prev,
+        gradeLevel: "",
+      }));
+    }
+  }
+
+
+
+  function validate(){
+
+
+  const newErrors:
+  Record<string,string> = {};
+
+
+
+  if(!formData.subjectName.trim()){
+
+   newErrors.subjectName =
+   "نام درس الزامی است";
+
+  }
+
+
+
+  if(!formData.gradeLevel){
+
+    newErrors.gradeLevel =
+    "پایه تحصیلی الزامی است";
+
+  }
+
+
+
+  setErrors(newErrors);
+
+
+
+  return Object.keys(newErrors).length===0;
+
+
+
   }
 
 
 
 
 
+  async function handleSubmit(){
 
 
 
-  async function handleSubmit() {
+    if(!validate())
+      return;
 
 
-    try {
+
+
+
+    try{
+
 
 
       const response =
@@ -93,13 +173,10 @@ export default function CreateSubjectDialog({
           "/api/subjects",
           {
 
-            method: "POST",
+            method:"POST",
 
-            headers: {
-
-              "Content-Type":
-                "application/json",
-
+            headers:{
+              "Content-Type":"application/json",
             },
 
 
@@ -111,7 +188,7 @@ export default function CreateSubjectDialog({
 
 
                 gradeLevel:
-                  formData.gradeLevel || null,
+                  formData.gradeLevel,
 
 
                 description:
@@ -127,10 +204,8 @@ export default function CreateSubjectDialog({
 
 
 
-
       const data =
         await response.json();
-
 
 
 
@@ -142,9 +217,11 @@ export default function CreateSubjectDialog({
         console.error(data);
 
 
+
         alert(
           "ایجاد درس ناموفق بود"
         );
+
 
 
         return;
@@ -155,13 +232,9 @@ export default function CreateSubjectDialog({
 
 
 
-
       onSuccess();
 
-
       setOpen(false);
-
-
 
 
 
@@ -183,12 +256,15 @@ export default function CreateSubjectDialog({
       console.error(error);
 
 
+
       alert(
         "خطای ارتباط با سرور"
       );
 
 
+
     }
+
 
 
   }
@@ -197,18 +273,9 @@ export default function CreateSubjectDialog({
 
 
 
-
-
-
   return (
 
-
-    <Dialog
-      open={open}
-      onOpenChange={setOpen}
-    >
-
-
+    <Dialog>
 
       <DialogTrigger>
 
@@ -220,10 +287,7 @@ export default function CreateSubjectDialog({
 
         </Button>
 
-
       </DialogTrigger>
-
-
 
 
 
@@ -233,9 +297,7 @@ export default function CreateSubjectDialog({
         dir="rtl"
       >
 
-
         <DialogHeader>
-
 
           <DialogTitle>
 
@@ -243,9 +305,7 @@ export default function CreateSubjectDialog({
 
           </DialogTitle>
 
-
         </DialogHeader>
-
 
 
 
@@ -273,29 +333,63 @@ export default function CreateSubjectDialog({
 
           />
 
+          {errors.subjectName && (
+            <p className="text-red-500 text-sm">{errors.subjectName}</p>
+          )}
 
 
 
 
 
+          <div className="space-y-2">
 
-          <Input
-
-            name="gradeLevel"
-
-            value={
-              formData.gradeLevel
-            }
-
-            onChange={
-              handleChange
-            }
-
-            placeholder="پایه تحصیلی (اختیاری)"
-
-          />
+            <Label>پایه تحصیلی</Label>
 
 
+
+            <Select
+
+              value={formData.gradeLevel}
+
+              onValueChange={handleSelectChange}
+
+            >
+
+              <SelectTrigger>
+
+                <SelectValue placeholder="انتخاب پایه" />
+
+              </SelectTrigger>
+
+
+
+              <SelectContent>
+
+                {GRADE_OPTIONS.map((grade) => (
+
+                  <SelectItem
+
+                    key={grade.value}
+
+                    value={grade.value}
+
+                  >
+
+                    {grade.label}
+
+                  </SelectItem>
+
+                ))}
+
+              </SelectContent>
+
+            </Select>
+
+          </div>
+
+          {errors.gradeLevel && (
+            <p className="text-red-500 text-sm">{errors.gradeLevel}</p>
+          )}
 
 
 
@@ -316,8 +410,6 @@ export default function CreateSubjectDialog({
             placeholder="توضیحات (اختیاری)"
 
           />
-
-
 
 
 
@@ -352,10 +444,13 @@ export default function CreateSubjectDialog({
 
 
 
+
     </Dialog>
 
 
+
   );
+
 
 
 }

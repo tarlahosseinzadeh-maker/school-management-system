@@ -17,6 +17,7 @@ import {
 
 
 
+
 // GET /api/subjects
 export async function GET(
   request: NextRequest
@@ -38,15 +39,17 @@ export async function GET(
       searchParams.get("search")
       || undefined;
 
+    const gradeLevel =
+      searchParams.get("gradeLevel")
+      || undefined;
 
 
 
     const subjects =
       await findSubjects({
         search,
+        gradeLevel,
       });
-
-
 
 
 
@@ -114,10 +117,7 @@ export async function GET(
     );
 
   }
-
 }
-
-
 
 
 
@@ -129,11 +129,11 @@ export async function POST(
 ) {
 
 
+
   try {
 
 
     await requireRole(["PRINCIPAL"]);
-
 
 
 
@@ -156,6 +156,7 @@ export async function POST(
     if (!validation.success) {
 
 
+
       return NextResponse.json(
         {
           error:
@@ -170,11 +171,7 @@ export async function POST(
         }
       );
 
-
     }
-
-
-
 
 
 
@@ -182,9 +179,6 @@ export async function POST(
       await createSubject(
         validation.data
       );
-
-
-
 
 
 
@@ -204,7 +198,6 @@ export async function POST(
       "CREATE SUBJECT ERROR:",
       error
     );
-
 
 
 

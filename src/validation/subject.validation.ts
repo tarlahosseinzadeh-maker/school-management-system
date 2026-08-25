@@ -22,9 +22,7 @@ export const createSubjectSchema =
       .max(
         30,
         "پایه تحصیلی نامعتبر است"
-      )
-      .optional()
-      .nullable(),
+      ),
 
 
 
@@ -62,8 +60,7 @@ export const updateSubjectSchema =
         30,
         "پایه تحصیلی نامعتبر است"
       )
-      .optional()
-      .nullable(),
+      .optional(),
 
 
 

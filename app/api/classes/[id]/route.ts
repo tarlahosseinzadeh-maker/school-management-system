@@ -2,6 +2,14 @@ import { NextResponse } from "next/server";
 
 import { prisma } from "@/src/database/prisma";
 
+import {
+  updateClass,
+} from "@/src/services/class.service";
+
+import {
+  updateClassSchema,
+} from "@/src/validation/class.validation";
+
 
 
 type Params = {
@@ -9,6 +17,8 @@ type Params = {
     id: string;
   }>;
 };
+
+
 
 
 
@@ -52,6 +62,7 @@ const classId = Number(id);
     );
 
 
+
   } catch(error:any){
 
 
@@ -59,6 +70,7 @@ const classId = Number(id);
       "GET STUDENTS ERROR:",
       error
     );
+
 
 
     return NextResponse.json(
@@ -71,11 +83,92 @@ const classId = Number(id);
     );
 
 
+
   }
 
 }
 
 
+
+
+
+// PUT
+export async function PUT(
+  request: Request,
+  { params }: Params
+) {
+
+  try {
+
+
+const { id } = await params;
+
+const classId = Number(id);
+
+    const body =
+      await request.json();
+
+    const validation =
+      updateClassSchema.safeParse(body);
+
+    if (!validation.success) {
+
+      return NextResponse.json(
+        {
+          error:
+            "Validation failed",
+
+          details:
+            validation.error.flatten(),
+
+        },
+        {
+          status: 400,
+        }
+      );
+
+    }
+
+
+
+    const updatedClass =
+      await updateClass(
+        classId,
+        validation.data
+      );
+
+
+
+    return NextResponse.json(
+      updatedClass
+    );
+
+
+
+  } catch(error:any){
+
+
+    console.error(
+      "UPDATE CLASS ERROR:",
+      error
+    );
+
+
+
+    return NextResponse.json(
+      {
+        error:error.message
+      },
+      {
+        status:500
+      }
+    );
+
+
+
+  }
+
+}
 
 
 
@@ -88,6 +181,7 @@ export async function POST(
 ) {
 
   try {
+
 
 const { id } = await params;
 
@@ -177,6 +271,8 @@ const classId = Number(id);
 
 
 
+
+
   }
   catch(error:any){
 
@@ -187,6 +283,7 @@ const classId = Number(id);
     );
 
 
+
     return NextResponse.json(
       {
         error:error.message
@@ -195,6 +292,7 @@ const classId = Number(id);
         status:500
       }
     );
+
 
 
   }

@@ -35,8 +35,8 @@ export async function findStudentGrades(
 
 
     orderBy:{
-
       examDate:"desc"
+
 
     }
 
@@ -45,9 +45,9 @@ export async function findStudentGrades(
 
 
 }
-
 type FindSubjectsParams = {
   search?: string;
+  gradeLevel?: string;
 };
 
 
@@ -59,19 +59,27 @@ export async function findSubjects(
 
   const {
     search,
+    gradeLevel,
   } = params;
 
 
 
   return await prisma.subjects.findMany({
 
-    where: search
-      ? {
-          subjectName: {
-            contains: search,
-          },
-        }
-      : undefined,
+    where: {
+      ...(search
+        ? {
+            subjectName: {
+              contains: search,
+            },
+          }
+        : {}),
+      ...(gradeLevel
+        ? {
+            gradeLevel,
+          }
+        : {}),
+    },
 
 
     orderBy: {

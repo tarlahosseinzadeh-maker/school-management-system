@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useClasses } from "./hooks/useClasses";
 
@@ -19,13 +19,13 @@ import type { SchoolClass } from "./types";
 export default function ClassesClient() {
 
 
+
   const {
     classes,
     loading,
     error,
     refresh,
   } = useClasses();
-
 
 
 
@@ -39,60 +39,11 @@ export default function ClassesClient() {
 
 
 
+  const [dataLoading, setDataLoading] = useState(false);
 
-
-  if (loading) {
-
-    return (
-
-      <div
-        dir="rtl"
-        className="
-        flex
-        min-h-[200px]
-        items-center
-        justify-center
-        text-gray-500
-        "
-      >
-
-        در حال بارگذاری...
-
-      </div>
-
-    );
-
-  }
-
-
-
-
-
-  if (error) {
-
-    return (
-
-      <div
-        dir="rtl"
-        className="
-        rounded-xl
-        border
-        bg-red-50
-        p-5
-        text-red-700
-        "
-      >
-
-        {error}
-
-      </div>
-
-    );
-
-  }
-
-
-
+  useEffect(() => {
+    setDataLoading(loading);
+  }, [loading]);
 
 
 
@@ -107,6 +58,8 @@ export default function ClassesClient() {
 
 
 
+
+
       <section
         className="
         bg-white
@@ -116,7 +69,6 @@ export default function ClassesClient() {
         "
       >
 
-
         <div
           className="
           flex
@@ -125,7 +77,6 @@ export default function ClassesClient() {
           gap-4
           "
         >
-
 
           <div>
 
@@ -163,10 +114,7 @@ export default function ClassesClient() {
 
         </div>
 
-
       </section>
-
-
 
 
 
@@ -181,41 +129,65 @@ export default function ClassesClient() {
         "
       >
 
+        {dataLoading && (
+          <div
+            className="
+            flex
+            min-h-[200px]
+            items-center
+            justify-center
+            text-gray-500
+            "
+          >
+            در حال بارگذاری...
+          </div>
+        )}
 
-        <ClassTable
+        {!dataLoading && error && (
+          <div
+            className="
+            rounded-xl
+            border
+            bg-red-50
+            p-5
+            text-red-700
+            "
+          >
+            {error}
+          </div>
+        )}
 
-          classes={classes}
+        {!dataLoading && !error && (
+          <ClassTable
 
-          onSuccess={refresh}
+            classes={classes}
 
-
-
-          onManageSubjects={(schoolClass)=>{
-
-            setSelectedClass(
-              schoolClass
-            );
-
-          }}
+            onSuccess={refresh}
 
 
 
-          onManageStudents={(schoolClass)=>{
+            onManageSubjects={(schoolClass)=>{
 
-            setStudentsClass(
-              schoolClass
-            );
+              setSelectedClass(
+                schoolClass
+              );
 
-          }}
+            }}
 
-        />
 
+
+            onManageStudents={(schoolClass)=>{
+
+              setStudentsClass(
+                schoolClass
+              );
+
+            }}
+
+          />
+        )}
 
       </section>
-
-
-
-
 
 
 
@@ -245,8 +217,6 @@ export default function ClassesClient() {
 
 
 
-
-
       {
         studentsClass && (
 
@@ -269,10 +239,6 @@ export default function ClassesClient() {
 
 
 
-
-
     </main>
-
   );
-
 }

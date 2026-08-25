@@ -6,9 +6,12 @@ import SubjectTable from "./components/SubjectTable";
 
 import CreateSubjectDialog from "./components/CreateSubjectDialog";
 
+import { useEffect, useState } from "react";
+
 
 
 export default function SubjectsClient() {
+
 
 
   const {
@@ -20,27 +23,11 @@ export default function SubjectsClient() {
 
 
 
+  const [dataLoading, setDataLoading] = useState(false);
 
-
-  if (loading) {
-
-    return <div className="ui-loading">در حال بارگذاری...</div>;
-
-  }
-
-
-
-
-
-  if (error) {
-
-    return <div className="ui-error">{error}</div>;
-
-  }
-
-
-
-
+  useEffect(() => {
+    setDataLoading(loading);
+  }, [loading]);
 
 
 
@@ -50,9 +37,12 @@ export default function SubjectsClient() {
 
 
 
+
       <div
         className="flex justify-between items-center"
       >
+
+
 
 
         <h1 className="page-title">
@@ -71,6 +61,7 @@ export default function SubjectsClient() {
 
 
 
+
       </div>
 
 
@@ -78,22 +69,26 @@ export default function SubjectsClient() {
 
 
 
+      {dataLoading && (
+        <div className="ui-loading">در حال بارگذاری...</div>
+      )}
 
-      <SubjectTable
+      {!dataLoading && error && (
+        <div className="ui-error">{error}</div>
+      )}
 
-        subjects={subjects}
+      {!dataLoading && !error && (
+        <SubjectTable
 
-        onSuccess={refresh}
+          subjects={subjects}
 
-      />
+          onSuccess={refresh}
 
-
+        />
+      )}
 
 
 
     </div>
-
   );
-
-
 }

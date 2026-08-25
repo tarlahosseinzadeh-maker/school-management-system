@@ -31,14 +31,15 @@ type Props = {
   schoolClass:{
     classId:number;
     className:string;
+    gradeLevel:string;
   };
 
   open:boolean;
 
   onClose:()=>void;
 
-};
- 
+ };
+
 
 
 type Subject={
@@ -47,7 +48,9 @@ type Subject={
 
   subjectName:string;
 
-};
+  gradeLevel:string;
+
+ };
 
 
 
@@ -65,7 +68,7 @@ type Teacher={
 
   };
 
-};
+ };
 
 
 
@@ -99,7 +102,8 @@ type ClassSubject={
 
   };
 
-};
+ };
+
 
 
 
@@ -116,574 +120,582 @@ export default function ManageSubjectsDialog({
 
 
 
-const [subjects,setSubjects]=
-useState<Subject[]>([]);
+ const [subjects,setSubjects]=
+  useState<Subject[]>([]);
 
 
 
-const [teachers,setTeachers]=
-useState<Teacher[]>([]);
+ const [teachers,setTeachers]=
+  useState<Teacher[]>([]);
 
 
 
-const [classSubjects,setClassSubjects]=
-useState<ClassSubject[]>([]);
+ const [classSubjects,setClassSubjects]=
+  useState<ClassSubject[]>([]);
 
 
 
-const [selectedSubject,setSelectedSubject]=
-useState<number | "">("");
+ const [selectedSubject,setSelectedSubject]=
+  useState<number | "">("");
 
 
 
-const [selectedTeacher,setSelectedTeacher]=
-useState<number | "">("");
+ const [selectedTeacher,setSelectedTeacher]=
+  useState<number | "">("");
 
 
 
 
 
-async function loadData(){
+ async function loadData(){
 
 
-try{
 
+ try{
 
-const subjectsRes =
-await fetch("/api/subjects");
 
 
-const subjectsData =
-await subjectsRes.json();
+  const subjectsRes =
+  await fetch("/api/subjects");
 
+  const subjectsData =
+  await subjectsRes.json();
 
-setSubjects(subjectsData);
 
+  const filteredSubjects =
+  subjectsData.filter(
+    (item:Subject) =>
+      item.gradeLevel === schoolClass.gradeLevel
+  );
 
+  setSubjects(filteredSubjects);
 
 
 
-const classSubjectsRes =
-await fetch("/api/class-subjects");
+  const classSubjectsRes =
+  await fetch("/api/class-subjects");
 
+  const classSubjectsData =
+  await classSubjectsRes.json();
 
-const classSubjectsData =
-await classSubjectsRes.json();
 
+  const filtered =
+  classSubjectsData.filter(
+    (item:ClassSubject)=>
+      item.classId === schoolClass.classId
+  );
 
 
-const filtered =
-classSubjectsData.filter(
-(item:ClassSubject)=>
-item.classId === schoolClass.classId
-);
 
+  setClassSubjects(filtered);
 
 
-setClassSubjects(filtered);
 
+ }
+ catch(error){
 
+  console.error(
+    "LOAD DATA ERROR:",
+    error
+  );
 
-}
+ }
 
-catch(error){
 
-console.error(
-"LOAD DATA ERROR:",
-error
-);
 
-}
+ }
 
 
-}
 
+ async function loadTeachersBySubject(
+  subjectId:number
+ ){
 
 
 
+  try{
 
-async function loadTeachersBySubject(
-subjectId:number
-){
 
 
-try{
+  const subject =
+  subjects.find(
+    item =>
+      item.subjectId === subjectId
+  );
 
 
-const subject =
-subjects.find(
-item =>
-item.subjectId === subjectId
-);
 
+  if(!subject){
 
+    setTeachers([]);
 
-if(!subject){
+    return;
 
-setTeachers([]);
+  }
 
-return;
 
-}
 
+  const res =
+  await fetch(
+    `/api/teacher?specialization=${encodeURIComponent(subject.subjectName)}`
+  );
 
 
-const res =
-await fetch(
-`/api/teacher?specialization=${encodeURIComponent(subject.subjectName)}`
-);
 
+  const data =
+  await res.json();
 
 
-const data =
-await res.json();
 
+  console.log(
+    "FILTERED TEACHERS:",
+    data
+  );
 
 
-console.log(
-"FILTERED TEACHERS:",
-data
-);
 
+  setTeachers(data);
 
 
-setTeachers(data);
 
+ }
+ catch(error){
 
+  console.error(
+    "LOAD TEACHERS ERROR:",
+    error
+  );
 
-}
+ }
 
-catch(error){
 
-console.error(
-"LOAD TEACHERS ERROR:",
-error
-);
 
-}
+ }
 
 
-}
 
+ useEffect(()=>{
 
 
 
+  if(open){
 
+    loadData();
 
-useEffect(()=>{
+  }
 
 
-if(open){
 
-loadData();
+ },[open]);
 
-}
 
 
-},[open]);
 
 
+ async function addSubject(){
 
 
 
+  if(
+   !selectedSubject ||
+   !selectedTeacher
+  )
 
-async function addSubject(){
+  return;
 
 
 
-if(
-!selectedSubject ||
-!selectedTeacher
-)
 
-return;
 
+  await fetch(
 
+    "/api/class-subjects",
 
+    {
 
+      method:"POST",
 
-await fetch(
+      headers:{
+        "Content-Type":
+        "application/json"
 
-"/api/class-subjects",
+      },
 
-{
 
-method:"POST",
+      body:JSON.stringify({
 
-headers:{
+        classId:
+        schoolClass.classId,
 
-"Content-Type":
-"application/json"
 
-},
+        subjectId:
+        selectedSubject,
 
 
-body:JSON.stringify({
+        teacherId:
+        selectedTeacher,
 
-classId:
-schoolClass.classId,
+      })
 
 
-subjectId:
-selectedSubject,
+    }
 
+  );
 
-teacherId:
-selectedTeacher,
 
 
-})
 
 
-}
+  setSelectedSubject("");
 
-);
+  setSelectedTeacher("");
 
+  setTeachers([]);
 
 
 
+  await loadData();
 
-setSelectedSubject("");
 
-setSelectedTeacher("");
 
-setTeachers([]);
+ }
 
 
 
-await loadData();
+ return (
 
+  <Dialog
 
+    open={open}
 
-}
+    onOpenChange={(v)=>{
 
 
 
+      if(!v)
 
+        onClose();
 
 
 
-return (
+    }}
 
-<Dialog
+  >
 
-open={open}
 
-onOpenChange={(v)=>{
 
-if(!v)
+  <DialogContent
 
-onClose();
+    dir="rtl"
 
-}}
+  >
 
->
 
 
-<DialogContent
+  <DialogHeader>
 
-dir="rtl"
+    <DialogTitle>
 
->
+      مدیریت درس‌های کلاس:
 
+      {" "}
 
-<DialogHeader>
+      {schoolClass.className}
 
-<DialogTitle>
+    </DialogTitle>
 
-مدیریت درس‌های کلاس:
+  </DialogHeader>
 
-{" "}
 
-{schoolClass.className}
 
-</DialogTitle>
 
-</DialogHeader>
 
+  <div>
 
 
+    <h3 className="font-bold">
 
+      درس‌های فعلی
 
+    </h3>
 
 
-<div>
 
+    {
 
-<h3 className="font-bold">
+      classSubjects.map(item=>(
 
-درس‌های فعلی
 
-</h3>
 
+        <div
 
+          key={item.classSubjectId}
 
-{
+          className="border p-3 my-2 rounded"
 
-classSubjects.map(item=>(
+        >
 
 
-<div
 
-key={item.classSubjectId}
 
-className="border p-3 my-2 rounded"
+          <div>
 
->
+            {item.subject.subjectName}
 
+          </div>
 
 
-<div>
 
-{item.subject.subjectName}
 
-</div>
 
+          <div className="text-sm text-gray-500">
 
 
+            معلم:
 
-<div className="text-sm text-gray-500">
+            {" "}
 
 
-معلم:
+            {
+              item.teacher?.user?.firstName
+              ??
+              "بدون معلم"
+            }
 
-{" "}
 
 
-{
-item.teacher?.user?.firstName
-??
-"بدون معلم"
-}
+            {" "}
 
 
 
-{" "}
+            {
+              item.teacher?.user?.lastName
+              ??
+              ""
+            }
 
 
 
-{
-item.teacher?.user?.lastName
-??
-""
-}
+          </div>
 
 
 
-</div>
 
+        </div>
 
 
 
-</div>
+      ))
 
+    }
 
-))
 
-}
 
 
 
+  </div>
 
-</div>
 
 
 
 
+  <div className="space-y-3">
 
 
 
+    <h3 className="font-bold">
 
+      افزودن درس
 
-<div className="space-y-3">
+    </h3>
 
 
 
-<h3 className="font-bold">
 
-افزودن درس
 
-</h3>
 
 
+    <div className="space-y-2">
 
 
 
+      <Label>
 
+        درس
 
-<select
+      </Label>
 
-className="border p-2 w-full"
 
-value={selectedSubject}
 
-onChange={(e)=>{
+      <Select
 
+        value={selectedSubject.toString()}
 
-const value =
-Number(e.target.value);
+        onValueChange={(value) => {
 
+          const numValue = Number(value);
 
+          setSelectedSubject(numValue);
 
-setSelectedSubject(value);
+          setSelectedTeacher("");
 
 
-setSelectedTeacher("");
 
+          if(numValue){
 
+            loadTeachersBySubject(numValue);
 
-if(value){
+          }
 
-loadTeachersBySubject(value);
+        }}
 
-}
+      >
 
+        <SelectTrigger>
 
-}}
+          <SelectValue placeholder="انتخاب درس" />
 
->
+        </SelectTrigger>
 
 
-<option value="">
 
-انتخاب درس
+        <SelectContent>
 
-</option>
+          {subjects.map((subject)=>(
 
+            <SelectItem
 
+              key={subject.subjectId}
 
-{
+              value={subject.subjectId.toString()}
 
-subjects.map(subject=>(
+            >
 
+              {subject.subjectName}
 
-<option
+            </SelectItem>
 
-key={subject.subjectId}
+          ))}
 
-value={subject.subjectId}
+        </SelectContent>
 
->
+      </Select>
 
-{subject.subjectName}
 
-</option>
 
+    </div>
 
-))
 
-}
 
 
-</select>
 
+    <div className="space-y-2">
 
 
 
+      <Label>
 
+        معلم
 
+      </Label>
 
 
 
-<select
+      <Select
 
-className="border p-2 w-full"
+        value={selectedTeacher.toString()}
 
-value={selectedTeacher}
+        onValueChange={(value) =>
+          setSelectedTeacher(Number(value))
+        }
 
-onChange={(e)=>
+      >
 
-setSelectedTeacher(
-Number(e.target.value)
-)
+        <SelectTrigger>
 
-}
+          <SelectValue placeholder="انتخاب معلم" />
 
->
+        </SelectTrigger>
 
 
-<option value="">
 
-انتخاب معلم
+        <SelectContent>
 
-</option>
+          {teachers.map((teacher)=>(
 
+            <SelectItem
 
+              key={teacher.userId}
 
-{
+              value={teacher.userId.toString()}
 
-teachers.map(teacher=>(
+            >
 
 
-<option
 
-key={teacher.userId}
+              {teacher.user.firstName}
 
-value={teacher.userId}
+              {" "}
 
->
+              {teacher.user.lastName}
 
 
-{teacher.user.firstName}
 
-{" "}
+            </SelectItem>
 
-{teacher.user.lastName}
 
 
-</option>
+          ))}
 
+        </SelectContent>
 
-))
+      </Select>
 
 
-}
 
+    </div>
 
 
-</select>
 
 
 
+    <Button
 
+      onClick={addSubject}
 
+      disabled={
+        !selectedSubject ||
+        !selectedTeacher
+      }
 
+    >
 
+      افزودن
 
-<Button
+    </Button>
 
-onClick={addSubject}
 
-disabled={
-!selectedSubject ||
-!selectedTeacher
-}
 
->
 
-افزودن
 
-</Button>
+  </div>
 
 
 
 
 
-</div>
+  </DialogContent>
 
 
 
 
 
+  </Dialog>
 
 
-</DialogContent>
 
+ );
 
-</Dialog>
-
-
-);
 
 
 }

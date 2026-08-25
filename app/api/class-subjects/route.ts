@@ -47,6 +47,7 @@ export async function GET() {
         );
 
 
+
     } catch(error){
 
 
@@ -54,6 +55,7 @@ export async function GET() {
             "GET CLASS SUBJECTS ERROR:",
             error
         );
+
 
 
         return NextResponse.json(
@@ -82,7 +84,9 @@ export async function POST(
 ){
 
 
+
     try{
+
 
 
         const body =
@@ -95,7 +99,6 @@ export async function POST(
             subjectId,
             teacherId
         } = body;
-
 
 
 
@@ -117,6 +120,53 @@ export async function POST(
 
         }
 
+
+
+        // Verify grade match before creating
+        const [schoolClass, subject] =
+            await Promise.all([
+
+                prisma.physicalclasses.findUnique({
+                    where: { classId: Number(classId) },
+                }),
+
+                prisma.subjects.findUnique({
+                    where: { subjectId: Number(subjectId) },
+                }),
+
+            ]);
+
+
+
+        if (!schoolClass || !subject) {
+
+            return NextResponse.json(
+                {
+                    error:
+                    "Invalid class or subject"
+                },
+                {
+                    status:400
+                }
+            );
+
+        }
+
+
+
+        if (subject.gradeLevel !== schoolClass.gradeLevel) {
+
+            return NextResponse.json(
+                {
+                    error:
+                    "SUBJECT_GRADE_MISMATCH"
+                },
+                {
+                    status:400
+                }
+            );
+
+        }
 
 
 
@@ -159,8 +209,6 @@ export async function POST(
 
 
 
-
-
         console.log(
             "CREATED:",
             newClassSubject
@@ -177,6 +225,8 @@ export async function POST(
 
 
 
+
+
     }catch(error){
 
 
@@ -184,6 +234,7 @@ export async function POST(
             "CREATE CLASS SUBJECT ERROR:",
             error
         );
+
 
 
         return NextResponse.json(

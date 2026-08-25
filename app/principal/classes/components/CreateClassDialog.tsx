@@ -21,6 +21,16 @@ import { Input } from "@/components/ui/input";
 
 import { Label } from "@/components/ui/label";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { GRADE_OPTIONS } from "@/src/constants/grades";
+
 
 
 type Props = {
@@ -28,7 +38,6 @@ type Props = {
   onSuccess:()=>void;
 
 };
-
 
 
 
@@ -43,29 +52,27 @@ export default function CreateClassDialog({
 
 
 const [open,setOpen] =
-useState(false);
+  useState(false);
 
 
 
 const [className,setClassName] =
-useState("");
+  useState("");
 
 
 
 const [gradeLevel,setGradeLevel] =
-useState("");
+  useState<string>("");
 
 
 
 const [capacity,setCapacity] =
-useState("");
+  useState("");
 
 
 
 const [academicYear,setAcademicYear] =
-useState("");
-
-
+  useState("");
 
 
 
@@ -76,62 +83,61 @@ async function createClass(){
 
 
 const response =
-await fetch(
-"/api/classes",
-{
+  await fetch(
+    "/api/classes",
+    {
 
-method:"POST",
+      method:"POST",
 
-headers:{
-"Content-Type":"application/json",
-},
+      headers:{
+        "Content-Type":"application/json",
+      },
 
 
-body:JSON.stringify({
+      body:JSON.stringify({
 
-className,
+        className,
 
-gradeLevel,
+        gradeLevel,
 
-capacity:Number(capacity),
+        capacity:Number(capacity),
 
-academicYear,
+        academicYear,
 
-})
+      })
+
+
+    }
+  );
+
+
+
+
+
+  if(response.ok){
+
+
+
+    setClassName("");
+
+    setGradeLevel("");
+
+    setCapacity("");
+
+    setAcademicYear("");
+
+    setOpen(false);
+
+
+    onSuccess();
+
+
+
+  }
+
 
 
 }
-);
-
-
-
-
-
-if(response.ok){
-
-
-setClassName("");
-
-setGradeLevel("");
-
-setCapacity("");
-
-setAcademicYear("");
-
-setOpen(false);
-
-
-onSuccess();
-
-
-}
-
-
-
-}
-
-
-
 
 
 
@@ -140,261 +146,293 @@ onSuccess();
 return (
 
 
-<Dialog
+  <Dialog
 
-open={open}
+    open={open}
 
-onOpenChange={setOpen}
+    onOpenChange={setOpen}
 
->
+  >
 
 
-<DialogTrigger>
 
+    <DialogTrigger>
 
-<Button>
 
-ایجاد کلاس جدید
 
-</Button>
+      <Button>
 
+        ایجاد کلاس جدید
 
-</DialogTrigger>
+      </Button>
 
 
 
+    </DialogTrigger>
 
 
 
 
 
-<DialogContent
+    <DialogContent
 
-dir="rtl"
+      dir="rtl"
 
-className="
-sm:max-w-md
-"
+      className="
+      sm:max-w-md
+      "
 
->
+    >
 
 
-<DialogHeader>
 
-<DialogTitle>
+      <DialogHeader>
 
-ایجاد کلاس جدید
+        <DialogTitle>
 
-</DialogTitle>
+          ایجاد کلاس جدید
 
-</DialogHeader>
+        </DialogTitle>
 
+      </DialogHeader>
 
 
 
 
 
+      <div
 
-<div
+        className="
+        space-y-5
+        py-4
+        "
 
-className="
-space-y-5
-py-4
-"
+      >
 
->
 
 
 
+        <div className="space-y-2">
 
 
 
-<div className="space-y-2">
+          <Label>
 
+            نام کلاس
 
-<Label>
+          </Label>
 
-نام کلاس
 
-</Label>
 
+          <Input
 
-<Input
 
 
-value={className}
+            value={className}
 
 
-onChange={(e)=>
 
-setClassName(
-e.target.value
-)
+            onChange={(e)=>
 
-}
+              setClassName(
+                e.target.value
+              )
 
+            }
 
-/>
 
 
-</div>
+          />
 
 
 
+        </div>
 
 
 
 
-<div className="space-y-2">
 
+        <div className="space-y-2">
 
-<Label>
 
-پایه
 
-</Label>
+          <Label>
 
+            پایه
 
-<Input
+          </Label>
 
 
-value={gradeLevel}
 
+          <Select
 
-onChange={(e)=>
+            value={gradeLevel}
 
-setGradeLevel(
-e.target.value
-)
+            onValueChange={(value) => setGradeLevel(value || "")}
 
-}
+          >
 
+            <SelectTrigger>
 
-/>
+              <SelectValue placeholder="انتخاب پایه" />
 
+            </SelectTrigger>
 
-</div>
 
 
+            <SelectContent>
 
+              {GRADE_OPTIONS.map((grade) => (
 
+                <SelectItem
 
+                  key={grade.value}
 
+                  value={grade.value}
 
-<div className="space-y-2">
+                >
 
+                  {grade.label}
 
-<Label>
+                </SelectItem>
 
-ظرفیت کلاس
+              ))}
 
-</Label>
+            </SelectContent>
 
+          </Select>
 
-<Input
 
-type="number"
 
+        </div>
 
-value={capacity}
 
 
-onChange={(e)=>
 
-setCapacity(
-e.target.value
-)
 
-}
+        <div className="space-y-2">
 
 
-/>
 
+          <Label>
 
-</div>
+            ظرفیت کلاس
 
+          </Label>
 
 
 
+          <Input
 
+            type="number"
 
 
 
-<div className="space-y-2">
+            value={capacity}
 
 
-<Label>
 
-سال تحصیلی
+            onChange={(e)=>
 
-</Label>
+              setCapacity(
+                e.target.value
+              )
 
+            }
 
-<Input
 
 
-placeholder="مثلا 1405-1406"
+          />
 
 
-value={academicYear}
 
+        </div>
 
-onChange={(e)=>
 
-setAcademicYear(
-e.target.value
-)
 
-}
 
 
-/>
+        <div className="space-y-2">
 
 
-</div>
 
+          <Label>
 
+            سال تحصیلی
 
+          </Label>
 
 
 
+          <Input
 
-<Button
 
-onClick={createClass}
 
-className="
-w-full
-mt-2
-"
+            placeholder="مثلا 1405-1406"
 
->
 
-ذخیره کلاس
 
-</Button>
+            value={academicYear}
 
 
 
+            onChange={(e)=>
 
+              setAcademicYear(
+                e.target.value
+              )
 
+            }
 
-</div>
 
 
+          />
 
 
 
+        </div>
 
 
-</DialogContent>
 
 
 
-</Dialog>
+        <Button
+
+          onClick={createClass}
+
+          className="
+          w-full
+          mt-2
+          "
+
+        >
+
+          ذخیره کلاس
+
+        </Button>
+
+
+
+
+
+      </div>
+
+
+
+
+
+    </DialogContent>
+
+
+
+
+
+  </Dialog>
+
 
 
 );
+
 
 
 }
