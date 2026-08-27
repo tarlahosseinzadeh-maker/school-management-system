@@ -6,13 +6,23 @@ import { prisma } from "@/src/database/prisma";
 // GET CLASS SUBJECTS
 // =========================
 
-export async function GET() {
+export async function GET(request: NextRequest) {
 
     try {
 
+        const { searchParams } = new URL(request.url);
+        const classIdParam = searchParams.get("classId");
+
+        const where: any = {};
+
+        if (classIdParam) {
+            where.classId = Number(classIdParam);
+        }
 
         const classSubjects =
             await prisma.classsubjects.findMany({
+
+                where,
 
                 include:{
 

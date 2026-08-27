@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import {
   Award,
   BookOpen,
+  CalendarDays,
   ClipboardList,
   FolderOpen,
   GraduationCap,
@@ -50,6 +51,11 @@ const menu = [
     title: "فایل‌های آموزشی",
     href: "/students/files",
     icon: FolderOpen,
+  },
+  {
+    title: "برنامه هفتگی",
+    href: "/students/timetables",
+    icon: CalendarDays,
   },
 ];
 

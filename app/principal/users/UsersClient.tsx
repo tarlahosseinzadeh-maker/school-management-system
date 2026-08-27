@@ -96,6 +96,8 @@ export default function UsersClient() {
     setDataLoading(loading);
   }, [loading]);
 
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
+
 
 
   return (
@@ -187,6 +189,10 @@ export default function UsersClient() {
 
 
           <CreateUserDialog
+
+            open={createDialogOpen}
+
+            onOpenChange={setCreateDialogOpen}
 
             onSuccess={refresh}
 

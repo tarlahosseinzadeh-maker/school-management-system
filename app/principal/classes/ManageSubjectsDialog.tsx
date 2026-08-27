@@ -142,68 +142,76 @@ export default function ManageSubjectsDialog({
 
  const [selectedTeacher,setSelectedTeacher]=
   useState<number | "">("");
+  async function loadData(){
 
 
 
 
-
- async function loadData(){
-
-
-
- try{
+  try{
 
 
 
-  const subjectsRes =
-  await fetch("/api/subjects");
 
-  const subjectsData =
-  await subjectsRes.json();
+   const subjectsRes =
+   await fetch("/api/subjects");
 
-
-  const filteredSubjects =
-  subjectsData.filter(
-    (item:Subject) =>
-      item.gradeLevel === schoolClass.gradeLevel
-  );
-
-  setSubjects(filteredSubjects);
+   const subjectsData =
+   await subjectsRes.json();
 
 
+   if (!Array.isArray(subjectsData)) {
+     throw new Error(subjectsData.error || "خطا در دریافت دروس");
+   }
 
-  const classSubjectsRes =
-  await fetch("/api/class-subjects");
+   const filteredSubjects =
+   subjectsData.filter(
+     (item:Subject) =>
+       item.gradeLevel === schoolClass.gradeLevel
+   );
 
-  const classSubjectsData =
-  await classSubjectsRes.json();
-
-
-  const filtered =
-  classSubjectsData.filter(
-    (item:ClassSubject)=>
-      item.classId === schoolClass.classId
-  );
+   setSubjects(filteredSubjects);
 
 
 
-  setClassSubjects(filtered);
+
+   const classSubjectsRes =
+   await fetch(`/api/class-subjects?classId=${schoolClass.classId}`);
+
+   const classSubjectsData =
+   await classSubjectsRes.json();
+
+
+   if (!Array.isArray(classSubjectsData)) {
+     throw new Error(classSubjectsData.error || "خطا در دریافت گروه‌های درسی");
+   }
+
+   const filtered =
+   classSubjectsData.filter(
+     (item:ClassSubject)=>
+       item.classId === schoolClass.classId
+   );
 
 
 
- }
- catch(error){
-
-  console.error(
-    "LOAD DATA ERROR:",
-    error
-  );
-
- }
+   setClassSubjects(filtered);
 
 
 
- }
+
+  }
+  catch(error){
+
+   console.error(
+     "LOAD DATA ERROR:",
+     error
+   );
+
+  }
+
+
+
+
+  }
 
 
 
@@ -362,7 +370,54 @@ export default function ManageSubjectsDialog({
 
 
 
- return (
+  async function removeSubject(
+    classSubjectId:number
+  ){
+
+    if(
+      !window.confirm(
+        "آیا از حذف این درس اطمینان دارید؟"
+      )
+    ){
+      return;
+    }
+
+    try{
+
+      const res =
+      await fetch(
+        `/api/class-subjects/${classSubjectId}`,
+        {
+          method:"DELETE"
+        }
+      );
+
+      if(!res.ok){
+        const data =
+        await res.json();
+        alert(
+          data.error ||
+          "خطا در حذف درس"
+        );
+        return;
+      }
+
+      await loadData();
+
+    }
+    catch(error){
+      console.error(
+        "DELETE SUBJECT ERROR:",
+        error
+      );
+      alert(
+        "خطای ارتباط با سرور"
+      );
+    }
+
+  }
+
+  return (
 
   <Dialog
 
@@ -431,24 +486,19 @@ export default function ManageSubjectsDialog({
 
           key={item.classSubjectId}
 
-          className="border p-3 my-2 rounded"
+          className="border p-3 my-2 rounded flex items-start justify-between gap-2"
 
         >
 
 
 
 
-          <div>
+                    <div>
+            <div>
+              {item.subject.subjectName}
+            </div>
 
-            {item.subject.subjectName}
-
-          </div>
-
-
-
-
-
-          <div className="text-sm text-gray-500">
+            <div className="text-sm text-gray-500">
 
 
             معلم:
@@ -477,6 +527,19 @@ export default function ManageSubjectsDialog({
 
 
           </div>
+          </div>
+
+          <Button
+            variant="destructive"
+            size="sm"
+            onClick={() =>
+              removeSubject(
+                item.classSubjectId
+              )
+            }
+          >
+            حذف
+          </Button>
 
 
 
@@ -549,6 +612,16 @@ export default function ManageSubjectsDialog({
 
         }}
 
+        itemToStringLabel={(value) => {
+
+          const subject = subjects.find(
+            (s) => s.subjectId.toString() === value
+          );
+
+          return subject ? subject.subjectName : "";
+
+        }}
+
       >
 
         <SelectTrigger>
@@ -608,6 +681,18 @@ export default function ManageSubjectsDialog({
         onValueChange={(value) =>
           setSelectedTeacher(Number(value))
         }
+
+        itemToStringLabel={(value) => {
+
+          const teacher = teachers.find(
+            (t) => t.userId.toString() === value
+          );
+
+          return teacher
+            ? `${teacher.user.firstName} ${teacher.user.lastName}`
+            : "";
+
+        }}
 
       >
 

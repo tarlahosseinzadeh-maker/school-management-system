@@ -24,7 +24,7 @@ function getDatabaseConfig() {
 
 const adapter = new PrismaMariaDb({
   ...getDatabaseConfig(),
-  connectionLimit: 1,
+  connectionLimit: 5,
 });
 
 

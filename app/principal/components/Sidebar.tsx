@@ -11,6 +11,7 @@ import {
   School,
   UserPlus,
   Users,
+  CalendarDays,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import LogoutButton from "@/components/LogoutButton";
@@ -51,6 +52,11 @@ const menuItems = [
     title: "کارنامه‌ها",
     href: "/principal/grades",
     icon: ClipboardList,
+  },
+  {
+    title: "برنامه هفتگی",
+    href: "/principal/timetables",
+    icon: CalendarDays,
   },
 ];
 

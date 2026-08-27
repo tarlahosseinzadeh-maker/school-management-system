@@ -64,6 +64,7 @@ model classsubjects {
   assignments      assignments[]
   educationalFiles educationalfiles[]
   grades           grades[]
+  timetables       timetables[]
 
   @@unique([classId, subjectId])
   @@index([subjectId])
@@ -107,6 +108,7 @@ model physicalclasses {
   academicYear  String          @db.VarChar(20)
   students      students[]
   classSubjects classsubjects[]
+  timetables    timetables[]
 }
 
 model preregistrations {
@@ -145,6 +147,23 @@ model subjects {
   gradeLevel    String          @db.VarChar(30)
   description   String          @db.Text
   classsubjects classsubjects[]
+}
+
+model timetables {
+  timetableId    Int      @id @default(autoincrement())
+  classSubjectId Int
+  classId        Int
+  dayOfWeek      Int
+  period         Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  classSubject   classsubjects  @relation(fields: [classSubjectId], references: [classSubjectId], onDelete: Cascade)
+  class          physicalclasses @relation(fields: [classId], references: [classId], onDelete: Cascade)
+
+  @@unique([classId, dayOfWeek, period])
+  @@index([classSubjectId])
+  @@map("timetables")
 }
 
 model teachers {
