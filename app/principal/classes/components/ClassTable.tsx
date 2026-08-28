@@ -237,7 +237,7 @@ export default function ClassTable({
 
                     >
 
-                      دانش‌آموزان
+                      مدیریت دانش‌آموزان
 
                     </Button>
 

@@ -94,6 +94,30 @@ export async function GET(
 
 
 
+export async function DELETE(
+  request: Request
+) {
+  try {
+    const body = await request.json();
+    const studentId = Number(body.studentId);
+
+    await prisma.students.update({
+      where: { userId: studentId },
+      data: { classId: null },
+      include: { user: true },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error: unknown) {
+    console.error("DELETE STUDENT ERROR:", error);
+    const message = error instanceof Error ? error.message : "خطای ناشناخته";
+    return NextResponse.json(
+      { error: message },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(
   request:Request,
   context:Context
